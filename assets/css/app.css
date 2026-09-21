@@ -3,6 +3,7 @@
 
 @import "tailwindcss" source(none);
 @import "phoenix-colocated/model_name_talk/colocated.css";
+@import "./deck.css";
 @import "./play.css";
 @source "../css";
 @source "../js";

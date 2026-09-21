@@ -17,8 +17,8 @@ defmodule ModelNameTalkWeb.Router do
   scope "/", ModelNameTalkWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-
+    live "/", DeckLive
+    live "/presenter", PresenterLive
     live "/play", PlayLive
   end
 

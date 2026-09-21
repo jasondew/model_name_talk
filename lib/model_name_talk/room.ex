@@ -68,6 +68,17 @@ defmodule ModelNameTalk.Room do
   @spec open(atom() | nil) :: :ok
   def open(identifier), do: GenServer.call(__MODULE__, {:open, identifier})
 
+  @doc """
+  Asks a round, clearing it first even when it is the round already open.
+
+  This is what walking back to a question does. `open/1` leaves a round it is
+  already showing alone, which is right when the deck merely re-renders, but
+  wrong when the speaker has come back to ask again: the answer would still be
+  on screen and the old answers would still be counted.
+  """
+  @spec ask(atom()) :: :ok
+  def ask(identifier), do: GenServer.call(__MODULE__, {:ask, identifier})
+
   @doc "Stops accepting answers. The timer does this, and so can the speaker."
   @spec lock() :: :ok
   def lock, do: GenServer.call(__MODULE__, :lock)
@@ -135,19 +146,15 @@ defmodule ModelNameTalk.Room do
   def handle_call({:open, identifier}, _from, %__MODULE__{round: identifier} = room),
     do: {:reply, :ok, room}
 
+  def handle_call({:ask, identifier}, _from, room),
+    do: {:reply, :ok, opened(room, identifier)}
+
   def handle_call({:open, nil}, _from, room) do
     {:reply, :ok, announce(%{room | round: nil, phase: :open, opened_at: nil, answers: %{}})}
   end
 
-  def handle_call({:open, identifier}, _from, room) do
-    round = Round.fetch(identifier)
-    opened_at = System.monotonic_time(:millisecond)
-
-    Process.send_after(self(), {:expire, identifier, opened_at}, round.seconds * 1000)
-
-    {:reply, :ok,
-     announce(%{room | round: identifier, phase: :open, opened_at: opened_at, answers: %{}})}
-  end
+  def handle_call({:open, identifier}, _from, room),
+    do: {:reply, :ok, opened(room, identifier)}
 
   def handle_call(:lock, _from, %__MODULE__{round: nil} = room), do: {:reply, :ok, room}
   def handle_call(:lock, _from, room), do: {:reply, :ok, announce(%{room | phase: :locked})}
@@ -208,6 +215,15 @@ defmodule ModelNameTalk.Room do
   end
 
   ## PRIVATE FUNCTIONS
+
+  defp opened(room, identifier) do
+    round = Round.fetch(identifier)
+    opened_at = System.monotonic_time(:millisecond)
+
+    Process.send_after(self(), {:expire, identifier, opened_at}, round.seconds * 1000)
+
+    announce(%{room | round: identifier, phase: :open, opened_at: opened_at, answers: %{}})
+  end
 
   # A choice has to be one of the ones offered. A number only has to be typed;
   # whether it is right is the round's business, not this one's.

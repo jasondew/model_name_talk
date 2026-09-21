@@ -1,0 +1,268 @@
+/*
+ * The deck reaches the audience through a video codec, not a projector.
+ * Zoom and Meet compress aggressively and hand small text to people as mush,
+ * and the thing this talk most needs legible is a long monospace file name.
+ * So everything here is larger and heavier than it would want to be in a
+ * room, and the contrast is not subtle.
+ */
+
+.deck,
+.presenter__stage {
+  --deck-ink: #fafaf9;
+  --deck-ground: #0c0a09;
+  --deck-dim: #a8a29e;
+  --deck-line: #44403c;
+  --deck-lit: #fde047;
+}
+
+.deck {
+  box-sizing: border-box;
+  position: relative;
+  min-height: 100dvh;
+  padding: 4vh 5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--deck-ground);
+  color: var(--deck-ink);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.deck *,
+.deck *::before,
+.deck *::after {
+  box-sizing: inherit;
+}
+
+/* Slides */
+
+.slide {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vh;
+}
+
+.slide__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.slide__subtitle {
+  margin: 0;
+  color: var(--deck-dim);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1.125rem, 2.6vw, 2.25rem);
+  font-weight: 700;
+}
+
+.slide__segment {
+  margin: 0;
+  color: var(--deck-dim);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1rem, 2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.slide__question {
+  margin: 0;
+  font-size: clamp(1.75rem, 4.2vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.slide__options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25vh;
+}
+
+.slide__option {
+  padding: 0.5rem 1rem;
+  border-left: 0.5rem solid var(--deck-line);
+  font-size: clamp(1.25rem, 2.6vw, 2.25rem);
+  font-weight: 600;
+}
+
+.slide__option--answer {
+  border-left-color: var(--deck-lit);
+  color: var(--deck-lit);
+  font-weight: 800;
+}
+
+.slide__numeric,
+.slide__count {
+  margin: 0;
+  color: var(--deck-dim);
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-weight: 600;
+}
+
+/* The answer */
+
+.slide__tally {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+}
+
+.slide__tally-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  font-size: clamp(1.125rem, 2.2vw, 1.875rem);
+}
+
+.slide__tally-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.slide__answer {
+  margin: 1vh 0 0;
+  color: var(--deck-lit);
+  font-size: clamp(1.25rem, 2.6vw, 2.25rem);
+  font-weight: 800;
+}
+
+/* The way in, on every slide */
+
+.deck__join {
+  position: absolute;
+  right: 2vw;
+  bottom: 2vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+/*
+ * A QR code under about 120px does not survive a screen share reliably, so
+ * this one is deliberately bigger than it looks like it needs to be.
+ */
+.deck__join svg {
+  display: block;
+  width: 160px;
+  height: 160px;
+}
+
+.deck__join-url {
+  margin: 0;
+  max-width: 160px;
+  color: #0c0a09;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+/* The speaker's window */
+
+.presenter {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: #1c1917;
+  color: #fafaf9;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.presenter__stage {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--deck-ground);
+}
+
+.presenter__stage .slide__title {
+  font-size: 2.25rem;
+}
+
+.presenter__stage .slide__question {
+  font-size: 1.5rem;
+}
+
+.presenter__stage .slide__option {
+  font-size: 1.0625rem;
+}
+
+.presenter__desk {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.presenter__where,
+.presenter__here {
+  margin: 0;
+  color: #a8a29e;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.presenter__controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.presenter__controls button {
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: #fafaf9;
+  color: #1c1917;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.presenter__controls button:disabled {
+  opacity: 0.4;
+}
+
+.deck__standings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.deck__standing {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  gap: 0.75rem;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid #44403c;
+  font-size: 1.0625rem;
+}
+
+.deck__standing-place,
+.deck__standing-points {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.deck__standing--empty {
+  grid-template-columns: 1fr;
+  color: #a8a29e;
+  font-weight: 400;
+}
