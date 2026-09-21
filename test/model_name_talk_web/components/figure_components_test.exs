@@ -82,4 +82,63 @@ defmodule ModelNameTalkWeb.FigureComponentsTest do
       assert later =~ "raw__special"
     end
   end
+
+  describe "the quantisation figures" do
+    test "the number line snaps each weight to one of sixteen levels" do
+      html =
+        render_component(&number_line/1, values: [0.13, -0.42, 0.87, -0.05], levels: 16, step: 3)
+
+      assert count(html, "figure__level") == 16
+      assert count(html, "figure__weight") == 4
+    end
+
+    test "the number line shows the weights before it shows the levels" do
+      early = render_component(&number_line/1, values: [0.13, -0.42], levels: 16, step: 1)
+
+      assert early =~ "figure__weight"
+      refute early =~ "figure__level"
+    end
+
+    test "the label anatomy explains each part of Q4_K_M" do
+      html =
+        render_component(&label_anatomy/1,
+          parts: [{"Q4", "4 bits for each weight"}, {"K", "k-quant"}, {"M", "medium"}],
+          step: 4
+        )
+
+      for part <- ~w(Q4 K M), do: assert(html =~ part)
+      assert html =~ "k-quant"
+    end
+
+    test "the label anatomy reveals one part at a time" do
+      parts = [{"Q4", "four bits"}, {"K", "k-quant"}, {"M", "medium"}]
+
+      early = render_component(&label_anatomy/1, parts: parts, step: 1)
+      late = render_component(&label_anatomy/1, parts: parts, step: 4)
+
+      refute early =~ "four bits"
+      assert late =~ "medium"
+    end
+
+    test "the accuracy table carries real sizes against what the formula predicts" do
+      html =
+        render_component(&accuracy_table/1,
+          rows: [{"Q8_0", 32.48, 32.44}, {"Q4_K_M", 18.56, 18.32}],
+          step: 3
+        )
+
+      assert html =~ "32.48"
+      assert html =~ "18.32"
+      assert html =~ "%"
+    end
+
+    test "the accuracy table brings rows in one at a time" do
+      rows = [{"BF16", 61.10, 61.06}, {"Q8_0", 32.48, 32.44}, {"Q4_K_M", 18.56, 18.32}]
+
+      early = render_component(&accuracy_table/1, rows: rows, step: 1)
+
+      assert early =~ "BF16"
+      refute early =~ "Q4_K_M"
+    end
+  end
 end

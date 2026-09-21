@@ -165,7 +165,115 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :values, :list, required: true
+  attr :levels, :integer, default: 16
+  attr :step, :integer, default: 1
+
+  @doc """
+  Weights on a number line, and the levels they are allowed to land on.
+
+  Step one is the weights where they really are. Step two draws the sixteen
+  places four bits can represent. Step three snaps each weight to its nearest
+  level, which is the whole of quantisation in one movement.
+  """
+  def number_line(assigns) do
+    ~H"""
+    <figure class="figure figure--line">
+      <div class="line">
+        <span
+          :for={level <- 0..(@levels - 1)}
+          :if={@step >= 2}
+          class="figure__level"
+          style={"left: #{level / (@levels - 1) * 100}%"}
+        ></span>
+
+        <span
+          :for={value <- @values}
+          class={["figure__weight", @step >= 3 && "figure__weight--snapped"]}
+          style={"left: #{on_line(snap(value, @levels, @step))}%"}
+        ></span>
+      </div>
+
+      <figcaption class="figure__caption">
+        {if @step >= 2,
+          do: "#{@levels} levels is all four bits can say",
+          else: "the weights as trained"}
+      </figcaption>
+    </figure>
+    """
+  end
+
+  attr :parts, :list, required: true
+  attr :step, :integer, default: 1
+
+  @doc "The label taken apart, one piece explained for each press."
+  def label_anatomy(assigns) do
+    ~H"""
+    <div class="anatomy">
+      <div :for={{{text, meaning}, order} <- Enum.with_index(@parts, 1)} class="anatomy__part">
+        <p class={["anatomy__text", order < @step && "anatomy__text--explained"]}>{text}</p>
+        <p :if={order < @step} class="anatomy__meaning">{meaning}</p>
+      </div>
+    </div>
+    """
+  end
+
+  attr :rows, :list, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  Real file sizes against what the formula predicts.
+
+  This is the chapter's argument. The brief framed the distance between a
+  predicted fifteen gigabytes and a real eighteen and a half as overhead to
+  explain away. It is not overhead: it is the wrong constant. Put the right
+  bits for each weight in and the formula lands within about one percent,
+  every time, which is a better thing to remember than a rule with an excuse
+  attached.
+  """
+  def accuracy_table(assigns) do
+    ~H"""
+    <table class="accuracy">
+      <thead>
+        <tr>
+          <th class="accuracy__head"></th>
+          <th class="accuracy__head">real file</th>
+          <th class="accuracy__head">the formula</th>
+          <th class="accuracy__head">out by</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          :for={{{label, real, predicted}, order} <- Enum.with_index(@rows, 1)}
+          :if={order <= @step}
+          class="accuracy__row"
+        >
+          <td class="accuracy__label">{label}</td>
+          <td class="accuracy__real">{real} GB</td>
+          <td class="accuracy__predicted">{predicted} GB</td>
+          <td class="accuracy__error">{error(real, predicted)}</td>
+        </tr>
+      </tbody>
+    </table>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
+
+  # Weights run from minus one to one; the line runs from zero to a hundred.
+  defp on_line(value), do: (value + 1) / 2 * 100
+
+  defp snap(value, _levels, step) when step < 3, do: value
+
+  defp snap(value, levels, _step) do
+    span = 2 / (levels - 1)
+
+    round((value + 1) / span) * span - 1
+  end
+
+  defp error(real, predicted) do
+    "#{Float.round((real - predicted) / predicted * 100, 2)}%"
+  end
 
   # Chops the text into ordinary runs and `<|...|>` special tokens, keeping
   # both so the whole string renders exactly as the model would read it.

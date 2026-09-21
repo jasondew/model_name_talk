@@ -190,6 +190,94 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## CHAPTER 7, Q4_K_M
+
+  def slide(%{slide: %Slide{id: :the_formula}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} />
+      <p class="slide__formula">parameters &times; bits &divide; 8</p>
+      <p class="slide__caption">billions in, gigabytes out</p>
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :the_method}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.number_line step={@step} levels={16} values={[0.13, -0.42, 0.87, -0.05, 0.51, -0.68]} />
+
+      <.step n={3} step={@step}>
+        <p class="slide__caption">
+          One scale for the block. One small integer for each weight.
+        </p>
+      </.step>
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :the_label}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+
+      <.label_anatomy
+        step={@step}
+        parts={[
+          {"Q4", "four bits for each weight"},
+          {"K", "llama.cpp's k-quant, which quantises the scales too"},
+          {"M", "medium. The sensitive tensors keep more bits"}
+        ]}
+      />
+    </section>
+    """
+  end
+
+  # Four lines of C, which is a better argument than a paragraph about them.
+  # The source lives in a binary rather than inline, because HEEx reads the
+  # struct's own opening brace as the start of an interpolation.
+  def slide(%{slide: %Slide{id: :the_real_cost}} = assigns) do
+    assigns = assign(assigns, source: block_q8_0_source())
+
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <pre class="raw"><code>{@source}</code></pre>
+
+      <.step n={2} step={@step}>
+        <p class="slide__caption">34 &times; 8 &divide; 32 = 8.5 bits for each weight, not 8.</p>
+      </.step>
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :does_it_work}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.accuracy_table
+        step={@step}
+        rows={[
+          {"Qwen3-30B BF16", 61.1, 61.06},
+          {"Qwen3-30B Q8_0", 32.48, 32.44},
+          {"Qwen3-30B Q4_K_M", 18.56, 18.32}
+        ]}
+      />
+
+      <.step n={3} step={@step}>
+        <p class="slide__caption">Not overhead. The wrong constant. Use 4.8, not 4.</p>
+      </.step>
+    </section>
+    """
+  end
+
   ## TERM CARDS
 
   def slide(%{slide: %Slide{id: id}} = assigns) when id in ~w(
@@ -269,6 +357,21 @@ defmodule ModelNameTalkWeb.SlideComponents do
   end
 
   ## PRIVATE FUNCTIONS
+
+  # Verbatim from llama.cpp, ggml/src/ggml-common.h. Quoted rather than
+  # paraphrased: the point of the slide is that this is the primary source,
+  # and that the eight-bit answer everyone repeats leaves out the scale.
+  defp block_q8_0_source do
+    [
+      "#define QK8_0 32",
+      "",
+      "typedef struct {",
+      "    ggml_half d;       // 2 bytes: the scale",
+      "    int8_t  qs[QK8_0]; // 32 bytes: the weights",
+      "} block_q8_0;"
+    ]
+    |> Enum.join("\n")
+  end
 
   # Nil when the file is not there, so the slide can say what is missing
   # instead of drawing a broken image in front of a room.
