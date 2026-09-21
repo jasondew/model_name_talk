@@ -23,13 +23,38 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/model_name_talk"
+
+// The audience's identity lives in the phone, not in the socket. A locked
+// phone, a discarded background tab and a browser crash all have to come back
+// as the same player with the same score, and a LiveView process survives
+// none of those.
+const TokenKeeper = {
+  mounted() {
+    let token = null
+
+    try {
+      token = window.localStorage.getItem("mnt:token")
+      if (!token) {
+        token = crypto.randomUUID()
+        window.localStorage.setItem("mnt:token", token)
+      }
+    } catch (error) {
+      // Private browsing, or site data turned off. Play for as long as this
+      // tab lives rather than refusing to let somebody join at all.
+      token = crypto.randomUUID()
+    }
+
+    this.pushEvent("token", {token: token})
+  }
+}
+
 import topbar from "../vendor/topbar"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: {...colocatedHooks, TokenKeeper},
 })
 
 // Show progress bar on live navigation and form submits
