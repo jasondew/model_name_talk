@@ -14,6 +14,7 @@ defmodule ModelNameTalkWeb.PresenterLive do
   use ModelNameTalkWeb, :live_view
 
   import ModelNameTalkWeb.DeckComponents
+  import ModelNameTalkWeb.SlideComponents
 
   alias ModelNameTalk.{Deck, Room}
   alias ModelNameTalkWeb.{DeckLive, Position}
