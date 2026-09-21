@@ -11,4 +11,5 @@ erl_crash.dump
 /priv/static/assets/
 /priv/static/cache_manifest.json
 /priv/rounds/*.log
+/assets/node_modules/
 .DS_Store
