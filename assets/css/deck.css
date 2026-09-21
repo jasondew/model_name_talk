@@ -266,3 +266,113 @@
   color: #a8a29e;
   font-weight: 400;
 }
+
+/*
+ * The file name header: the progress bar of the talk.
+ *
+ * It sits on every content slide and never moves. The only thing that changes
+ * is which segment is lit. Monospace, and deliberately large: this reaches
+ * the room through a video codec, and a long monospace string is the first
+ * thing compression turns to mush.
+ */
+
+.filename {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 3vh;
+}
+
+.filename__name {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1.125rem, 2.5vw, 2.125rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.filename__segment--done {
+  color: var(--deck-dim);
+}
+
+.filename__segment--current {
+  color: var(--deck-lit);
+  font-weight: 800;
+}
+
+.filename__segment--pending {
+  color: var(--deck-line);
+}
+
+/* Chapter 8's payoff: the same string, with the handover marked. */
+
+.filename--authors .filename__name {
+  font-size: clamp(1.25rem, 3.2vw, 2.75rem);
+}
+
+.filename--authors .filename__segment {
+  color: var(--deck-ink);
+  padding-bottom: 0.35rem;
+}
+
+.filename--authors .filename__segment--by-vendor {
+  border-bottom: 0.35rem solid var(--deck-ink);
+}
+
+.filename--authors .filename__segment--by-converter {
+  border-bottom: 0.35rem solid var(--deck-lit);
+  color: var(--deck-lit);
+}
+
+.filename__author {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.6vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.filename__author--vendor {
+  color: var(--deck-dim);
+}
+
+.filename__author--converter {
+  color: var(--deck-lit);
+}
+
+/*
+ * The annotated name. The one slide in the deck allowed to be dense, because
+ * it is the one people photograph.
+ */
+
+.annotated {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 0.25rem;
+}
+
+.annotated__column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 0.25rem solid var(--deck-line);
+}
+
+.annotated__segment {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1.125rem, 2.6vw, 2.5rem);
+  font-weight: 800;
+}
+
+.annotated__label {
+  margin: 0;
+  max-width: 11ch;
+  color: var(--deck-dim);
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
