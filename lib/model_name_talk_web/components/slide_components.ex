@@ -15,6 +15,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   use Phoenix.Component
 
+  import ModelNameTalkWeb.DeckComponents, only: [standings: 1]
   import ModelNameTalkWeb.FigureComponents
   import ModelNameTalkWeb.FilenameComponents
 
@@ -274,6 +275,60 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.step n={3} step={@step}>
         <p class="slide__caption">Not overhead. The wrong constant. Use 4.8, not 4.</p>
       </.step>
+    </section>
+    """
+  end
+
+  ## CHAPTER 8, .gguf
+
+  def slide(%{slide: %Slide{id: :one_file}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.file_box step={@step * 4} parts={["metadata", "tokenizer", "chat template", "tensors"]} />
+
+      <.step n={2} step={@step}>
+        <p class="slide__caption">The chat template from chapter five ships inside the weights.</p>
+      </.step>
+    </section>
+    """
+  end
+
+  # No new picture. The room has been reading this string for forty minutes,
+  # and drawing the line through it is the entire argument.
+  def slide(%{slide: %Slide{id: :two_authors}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} authors={@step >= 2} />
+
+      <.step n={3} step={@step}>
+        <p class="slide__caption">
+          Qwen released safetensors at BF16. Someone else converted it and named the rest.
+        </p>
+      </.step>
+    </section>
+    """
+  end
+
+  ## CHAPTER 9, CLOSE
+
+  def slide(%{slide: %Slide{id: :annotated_name}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.annotated />
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :the_board}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.standings standings={Room.standings()} limit={5} />
     </section>
     """
   end

@@ -258,6 +258,31 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :parts, :list, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  One file, divided into what it holds.
+
+  GGUF's whole claim is that everything travels together, so the figure is
+  one box with the parts inside it rather than four boxes side by side.
+  """
+  def file_box(assigns) do
+    ~H"""
+    <figure class="figure figure--file">
+      <div class="file-box">
+        <span
+          :for={{part, order} <- Enum.with_index(@parts, 1)}
+          :if={order <= @step}
+          class="file-box__part"
+        >
+          {part}
+        </span>
+      </div>
+    </figure>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
 
   # Weights run from minus one to one; the line runs from zero to a hundred.

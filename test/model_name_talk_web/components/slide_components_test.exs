@@ -50,6 +50,41 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(find(:round_open_weights)) =~ "download the weights"
   end
 
+  test "the file box shows what one gguf holds" do
+    html =
+      render_component(&FigureComponents.file_box/1,
+        parts: ["metadata", "tokenizer", "chat template", "tensors"],
+        step: 4
+      )
+
+    for part <- ["metadata", "tokenizer", "chat template", "tensors"] do
+      assert html =~ part
+    end
+  end
+
+  # The room has been reading this string for forty minutes. Drawing the line
+  # through it is the whole argument, and a new picture would weaken it.
+  test "the two authors slide splits the header rather than drawing a new picture" do
+    html = draw(find(:two_authors), 2)
+
+    assert html =~ "filename__author"
+    assert html =~ "Qwen wrote this"
+  end
+
+  test "the close shows the annotated name with every label" do
+    html = draw(find(:annotated_name))
+
+    for segment <- ModelNameTalk.Filename.segments() do
+      assert html =~ segment.text
+    end
+
+    assert html =~ "annotated__label"
+  end
+
+  test "the close shows the leaderboard" do
+    assert draw(find(:the_board)) =~ "deck__standings"
+  end
+
   test "the magnitude figure marks each model and labels its value" do
     html =
       render_component(&FigureComponents.orders_of_magnitude/1,
