@@ -21,6 +21,7 @@ defmodule ModelNameTalk.Room do
 
   use GenServer
 
+  alias ModelNameTalk.Round
   alias Phoenix.PubSub
 
   @topic "room"
@@ -63,6 +64,42 @@ defmodule ModelNameTalk.Room do
   @spec connected_count(t()) :: non_neg_integer()
   def connected_count(%__MODULE__{connections: connections}), do: map_size(connections)
 
+  @doc "Opens a round, or closes whatever is open when given nil."
+  @spec open(atom() | nil) :: :ok
+  def open(identifier), do: GenServer.call(__MODULE__, {:open, identifier})
+
+  @doc "Stops accepting answers. The timer does this, and so can the speaker."
+  @spec lock() :: :ok
+  def lock, do: GenServer.call(__MODULE__, :lock)
+
+  @doc "Puts the answer on the big screen."
+  @spec reveal() :: :ok
+  def reveal, do: GenServer.call(__MODULE__, :reveal)
+
+  @spec answer(String.t(), String.t()) :: :ok
+  def answer(token, value), do: GenServer.call(__MODULE__, {:answer, token, value})
+
+  @doc "How many people have answered the open round."
+  @spec answered_count(t()) :: non_neg_integer()
+  def answered_count(%__MODULE__{answers: answers}), do: map_size(answers)
+
+  @doc """
+  The answers so far as `{option, count}`, in the order the round lists its
+  options, so a bar chart cannot reorder itself while the audience watches.
+  A numeric round has no options and tallies to an empty list.
+  """
+  @spec tally(t()) :: [{String.t(), non_neg_integer()}]
+  def tally(%__MODULE__{round: nil}), do: []
+
+  def tally(%__MODULE__{round: identifier, answers: answers}) do
+    counts = answers |> Map.values() |> Enum.frequencies_by(& &1.value)
+
+    identifier
+    |> Round.fetch()
+    |> Map.fetch!(:options)
+    |> Enum.map(fn option -> {option, Map.get(counts, option, 0)} end)
+  end
+
   ## SERVER
 
   @impl GenServer
@@ -85,12 +122,74 @@ defmodule ModelNameTalk.Room do
 
   def handle_call(:reset, _from, _room), do: {:reply, :ok, announce(%__MODULE__{})}
 
+  def handle_call({:open, identifier}, _from, %__MODULE__{round: identifier} = room),
+    do: {:reply, :ok, room}
+
+  def handle_call({:open, nil}, _from, room) do
+    {:reply, :ok, announce(%{room | round: nil, phase: :open, opened_at: nil, answers: %{}})}
+  end
+
+  def handle_call({:open, identifier}, _from, room) do
+    round = Round.fetch(identifier)
+    opened_at = System.monotonic_time(:millisecond)
+
+    Process.send_after(self(), {:expire, identifier, opened_at}, round.seconds * 1000)
+
+    {:reply, :ok,
+     announce(%{room | round: identifier, phase: :open, opened_at: opened_at, answers: %{}})}
+  end
+
+  def handle_call(:lock, _from, %__MODULE__{round: nil} = room), do: {:reply, :ok, room}
+  def handle_call(:lock, _from, room), do: {:reply, :ok, announce(%{room | phase: :locked})}
+
+  def handle_call(:reveal, _from, %__MODULE__{round: nil} = room), do: {:reply, :ok, room}
+  def handle_call(:reveal, _from, room), do: {:reply, :ok, announce(%{room | phase: :revealed})}
+
+  def handle_call({:answer, _token, _value}, _from, %__MODULE__{round: nil} = room),
+    do: {:reply, :ok, room}
+
+  def handle_call({:answer, _token, _value}, _from, %__MODULE__{phase: phase} = room)
+      when phase != :open,
+      do: {:reply, :ok, room}
+
+  def handle_call({:answer, token, value}, _from, room) do
+    round = Round.fetch(room.round)
+
+    if acceptable?(round, value) do
+      recorded = %{
+        value: value,
+        correct?: Round.correct?(round, value),
+        at: System.monotonic_time(:millisecond)
+      }
+
+      {:reply, :ok, announce(put_in(room.answers[token], recorded))}
+    else
+      {:reply, :ok, room}
+    end
+  end
+
   @impl GenServer
+  # An expiry that names a round the deck has already moved on from is stale,
+  # and locking on it would close a question the speaker has only just asked.
+  def handle_info(
+        {:expire, identifier, opened_at},
+        %__MODULE__{round: identifier, opened_at: opened_at, phase: :open} = room
+      ) do
+    {:noreply, announce(%{room | phase: :locked})}
+  end
+
+  def handle_info({:expire, _identifier, _opened_at}, room), do: {:noreply, room}
+
   def handle_info({:DOWN, _reference, :process, pid, _reason}, room) do
     {:noreply, room |> Map.update!(:connections, &Map.delete(&1, pid)) |> announce()}
   end
 
   ## PRIVATE FUNCTIONS
+
+  # A choice has to be one of the ones offered. A number only has to be typed;
+  # whether it is right is the round's business, not this one's.
+  defp acceptable?(%Round{type: :choice, options: options}, value), do: value in options
+  defp acceptable?(%Round{type: :numeric}, value), do: String.trim(value) != ""
 
   defp announce(room) do
     PubSub.broadcast(ModelNameTalk.PubSub, @topic, {:room, room})
