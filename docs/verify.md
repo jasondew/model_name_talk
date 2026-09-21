@@ -136,9 +136,18 @@ name. The same leading number means different things in the two families.
 | Fact | Used by | Why it is still open |
 |---|---|---|
 | Ollama tag default quantization | chapter 8 | Secondary sources agree it is Q4_K_M, but no primary source found. Say "usually" on the slide, or check one tag's manifest. |
-| RTX 3060 VRAM | round 7 | The 3060 ships in 12 GB and 8 GB variants. Speaker to confirm which card is in the box. |
 | System RAM 16 GB | round 7 | Speaker's own machine. |
 | Qwen3-4B-Instruct-2507 at Q4_K_M, approximately 2.5 GB | chapter 9 | Not fetched. |
+
+## The speaker's hardware
+
+| Fact | Value | Source | Status |
+|---|---|---|---|
+| RTX 3060 VRAM | **12 GB** | speaker confirmed 2026-09-21 | checked |
+| System RAM | 16 GB | speaker's own machine | speaker to confirm |
+
+The 3060 also ships in an 8 GB variant, which is why this was worth asking.
+Round 7's premise is the 12 GB card.
 
 ## Talk day prerequisites
 
