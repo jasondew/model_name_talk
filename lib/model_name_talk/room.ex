@@ -21,7 +21,7 @@ defmodule ModelNameTalk.Room do
 
   use GenServer
 
-  alias ModelNameTalk.Round
+  alias ModelNameTalk.{Ledger, Round, Scoring}
   alias Phoenix.PubSub
 
   @topic "room"
@@ -78,6 +78,16 @@ defmodule ModelNameTalk.Room do
 
   @spec answer(String.t(), String.t()) :: :ok
   def answer(token, value), do: GenServer.call(__MODULE__, {:answer, token, value})
+
+  @doc "Everyone's handle, keyed by token, for naming people on the board."
+  @spec handles(t()) :: %{String.t() => String.t()}
+  def handles(%__MODULE__{participants: participants}) do
+    Map.new(participants, fn {token, participant} -> {token, participant.handle} end)
+  end
+
+  @doc "The leaderboard, best first."
+  @spec standings() :: [map()]
+  def standings, do: state() |> handles() |> Ledger.standings()
 
   @doc "How many people have answered the open round."
   @spec answered_count(t()) :: non_neg_integer()
@@ -143,7 +153,20 @@ defmodule ModelNameTalk.Room do
   def handle_call(:lock, _from, room), do: {:reply, :ok, announce(%{room | phase: :locked})}
 
   def handle_call(:reveal, _from, %__MODULE__{round: nil} = room), do: {:reply, :ok, room}
-  def handle_call(:reveal, _from, room), do: {:reply, :ok, announce(%{room | phase: :revealed})}
+
+  def handle_call(:reveal, _from, %__MODULE__{phase: :revealed} = room),
+    do: {:reply, :ok, room}
+
+  # Scoring waits for the reveal because the bonus depends on the order people
+  # came in, and until the answers stop changing that order can still change.
+  def handle_call(:reveal, _from, room) do
+    room.round
+    |> Round.fetch()
+    |> Scoring.score(room.opened_at, room.answers)
+    |> then(&Ledger.record(room.round, &1))
+
+    {:reply, :ok, announce(%{room | phase: :revealed})}
+  end
 
   def handle_call({:answer, _token, _value}, _from, %__MODULE__{round: nil} = room),
     do: {:reply, :ok, room}

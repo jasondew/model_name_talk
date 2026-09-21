@@ -232,4 +232,74 @@ defmodule ModelNameTalk.RoomTest do
       assert Room.state().phase == :open
     end
   end
+
+  describe "revealing scores the round" do
+    setup do
+      ModelNameTalk.Ledger.forget()
+      Room.open(:open_weights)
+      Room.join("token-one", "ada", self())
+      Room.join("token-two", "grace", elsewhere())
+      :ok
+    end
+
+    # A wrong answer is worth nothing but still counts as a round played, so
+    # somebody's own line reads "0 points, 1 of 1" rather than leaving them off
+    # the board wondering whether their phone worked.
+    test "pays the right answers and not the wrong ones, and lists both" do
+      Room.answer("token-one", "Qwen3")
+      Room.answer("token-two", "Claude")
+      Room.reveal()
+
+      assert [first, second] = Room.standings()
+      assert first.handle == "ada"
+      assert first.points == 15
+      assert second.handle == "grace"
+      assert second.points == 0
+      assert second.rounds == 1
+    end
+
+    test "adds a second round to the first" do
+      Room.answer("token-one", "Qwen3")
+      Room.reveal()
+
+      Room.open(:how_many_gpt2s)
+      Room.answer("token-one", "246")
+      Room.reveal()
+
+      assert [only] = Room.standings()
+      assert only.points == 30
+      assert only.rounds == 2
+    end
+
+    test "revealing twice does not pay twice" do
+      Room.answer("token-one", "Qwen3")
+      Room.reveal()
+      Room.reveal()
+
+      assert [only] = Room.standings()
+      assert only.points == 15
+    end
+
+    test "asking a walked-back round again corrects the record" do
+      Room.answer("token-one", "Claude")
+      Room.reveal()
+
+      assert [%{points: 0, rounds: 1}] = Room.standings()
+
+      Room.open(:how_many_gpt2s)
+      Room.open(:open_weights)
+      Room.answer("token-one", "Qwen3")
+      Room.reveal()
+
+      assert [only] = Room.standings()
+      assert only.points == 15
+      assert only.rounds == 1
+    end
+
+    test "scores nothing when nobody answered" do
+      Room.reveal()
+
+      assert Room.standings() == []
+    end
+  end
 end
