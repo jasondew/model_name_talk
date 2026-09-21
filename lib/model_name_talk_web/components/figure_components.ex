@@ -76,6 +76,51 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :experts, :integer, required: true
+  attr :active, :list, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  One Mixture of Experts layer: a router, and a grid of small feed forward
+  blocks with the ones this token uses lit.
+
+  The grid is the argument. A hundred and twenty eight squares with eight of
+  them lit says "most of this model sits still for any given token" faster
+  than a sentence can, and it is the one picture the chapter needs.
+  """
+  def expert_grid(assigns) do
+    ~H"""
+    <div class="figure__moe">
+      <p :if={@step >= 2} class="figure__router">router</p>
+
+      <div class="figure__grid">
+        <span
+          :for={expert <- 1..@experts}
+          class={[
+            "figure__expert",
+            @step >= 3 and expert in @active and "figure__expert--active"
+          ]}
+        ></span>
+      </div>
+
+      <p class="figure__moe-caption">{@experts} experts, {length(@active)} used</p>
+    </div>
+    """
+  end
+
+  @doc """
+  A dense layer: one feed forward block, drawn the same height as the grid
+  beside it so the comparison needs no caption.
+  """
+  def dense_layer(assigns) do
+    ~H"""
+    <div class="figure__moe">
+      <div class="figure__dense">feed forward</div>
+      <p class="figure__moe-caption">one block, always used</p>
+    </div>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
 
   defp decades(low, high) do

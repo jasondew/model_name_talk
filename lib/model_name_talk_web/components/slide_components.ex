@@ -81,6 +81,46 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## CHAPTER 4, A3B
+
+  def slide(%{slide: %Slide{id: :dense_or_sparse}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <div class="slide__pair">
+        <.dense_layer />
+        <.expert_grid experts={128} active={[6, 19, 31, 44, 68, 83, 101, 119]} step={@step} />
+      </div>
+    </section>
+    """
+  end
+
+  # Two lines, and the largest type in the deck. This is the chapter, and
+  # everything before it exists to make these two lines mean something.
+  def slide(%{slide: %Slide{id: :memory_and_speed}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} />
+
+      <p class="slide__equation">
+        <span class="slide__equation-from">Total parameters</span>
+        <span class="slide__equation-arrow">&rarr;</span>
+        <span class="slide__equation-to">memory</span>
+      </p>
+
+      <.step n={2} step={@step}>
+        <p class="slide__equation">
+          <span class="slide__equation-from">Active parameters</span>
+          <span class="slide__equation-arrow">&rarr;</span>
+          <span class="slide__equation-to">speed</span>
+        </p>
+      </.step>
+    </section>
+    """
+  end
+
   ## TERM CARDS
 
   def slide(%{slide: %Slide{id: id}} = assigns) when id in ~w(
