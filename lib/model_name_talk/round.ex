@@ -115,7 +115,12 @@ defmodule ModelNameTalk.Round do
         question: "Llama-3.3-70B-Instruct-Q8_0.gguf. How many gigabytes?",
         hint: "no rush on this one. parameters times bits over eight",
         type: :numeric,
-        answer: 74,
+        # The real file is 74.98 GB. 70 x 8.5 / 8 gives 74.4, and the true
+        # parameter count of 70.55B gives 74.96. The band also takes 70,
+        # which is what somebody gets who used 8 bits and forgot that Q8_0
+        # carries a scale for every block of 32 weights. They applied the
+        # formula, which is the thing being asked.
+        answer: 75,
         band: {68, 80},
         seconds: 45,
         speed_bonus: false
