@@ -20,3 +20,6 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# A scratch log, so a test run never writes into priv/rounds.
+config :model_name_talk, ledger_path: "/tmp/model_name_talk_test_ledger.log"

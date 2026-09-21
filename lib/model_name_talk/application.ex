@@ -12,6 +12,7 @@ defmodule ModelNameTalk.Application do
       {DNSCluster, query: Application.get_env(:model_name_talk, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ModelNameTalk.PubSub},
       ModelNameTalk.Room,
+      ModelNameTalk.Ledger,
       # Start a worker by calling: ModelNameTalk.Worker.start_link(arg)
       # {ModelNameTalk.Worker, arg},
       # Start to serve requests, typically the last entry
