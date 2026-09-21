@@ -204,4 +204,46 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
       assert Room.state().phase == :revealed
     end
   end
+
+  describe "what the speaker sees" do
+    test "the notes, with what must be said out loud marked", %{conn: conn} do
+      {:ok, presenter, html} = live(conn, ~p"/presenter")
+
+      assert html =~ "notes__must"
+      assert html =~ "Say the title once"
+
+      _ = presenter
+    end
+
+    test "the line this section has to land", %{conn: conn} do
+      {:ok, _presenter, html} = live(conn, ~p"/presenter")
+
+      assert html =~ Deck.section(hd(Deck.slides())).lands
+    end
+
+    test "a term card's definitions arrive as a glossary", %{conn: conn} do
+      {:ok, presenter, _html} = live(conn, ~p"/presenter")
+      press_to(presenter, :qwen3_terms)
+
+      assert render(presenter) =~ "notes__definition"
+    end
+
+    test "where the talk is, against where it should be", %{conn: conn} do
+      {:ok, _presenter, html} = live(conn, ~p"/presenter")
+
+      assert html =~ "slide 1 of"
+      assert html =~ "00:00"
+    end
+
+    test "the clock resets on r without moving the deck", %{conn: conn} do
+      {:ok, presenter, _html} = live(conn, ~p"/presenter")
+      press_to(presenter, :qwen3_terms)
+      where = Room.position()
+
+      render_keydown(presenter, "key", %{"key" => "r"})
+
+      assert Room.position() == where
+      assert render(presenter) =~ "00:00"
+    end
+  end
 end

@@ -376,3 +376,158 @@
   font-weight: 600;
   line-height: 1.25;
 }
+
+/*
+ * The speaker's window.
+ *
+ * Where am I, am I behind, what must this section land, what is the room
+ * looking at, what do I say. In that order, because the first two are the
+ * only questions anyone asks mid-talk.
+ */
+
+.presenter {
+  grid-template-rows: auto auto auto 1fr;
+}
+
+.presenter__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.presenter__lands {
+  margin: 0;
+  padding: 0.625rem 0.875rem;
+  border-left: 0.25rem solid #fde047;
+  background: #292524;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.clock {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.clock__time {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.clock__time--paused {
+  color: #a8a29e;
+}
+
+.clock__pace {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.clock__pace--on {
+  color: #4ade80;
+}
+
+.clock__pace--ahead {
+  color: #60a5fa;
+}
+
+.clock__pace--behind {
+  color: #fb7185;
+}
+
+.presenter__desk {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.presenter__game {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Notes */
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.notes__cues,
+.notes__musts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.notes__cue {
+  color: #d6d3d1;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+}
+
+.notes__must {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  color: #fafaf9;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.notes__must-tag {
+  flex: none;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 0.25rem;
+  background: #fde047;
+  color: #1c1917;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.notes__definitions {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.notes__definition {
+  display: grid;
+  grid-template-columns: minmax(8ch, 18ch) 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.notes__term {
+  margin: 0;
+  color: #fde047;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.notes__meaning {
+  margin: 0;
+  color: #d6d3d1;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
