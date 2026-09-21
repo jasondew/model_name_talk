@@ -198,3 +198,138 @@
   margin: 0;
   color: var(--play-dim);
 }
+
+/*
+ * The page the room takes away.
+ *
+ * Light rather than dark: this one gets read on a phone after the talk and
+ * printed by somebody, and neither wants a black background.
+ */
+
+.sheet {
+  box-sizing: border-box;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  background: #ffffff;
+  color: #1c1917;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.sheet *,
+.sheet *::before,
+.sheet *::after {
+  box-sizing: inherit;
+}
+
+.sheet__title {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sheet__block {
+  margin-bottom: 2.5rem;
+}
+
+.sheet__heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sheet__formula {
+  margin: 0 0 1rem;
+  font-size: clamp(1.0625rem, 3vw, 1.5rem);
+  font-weight: 800;
+}
+
+.sheet__bits {
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.sheet__bits-format,
+.sheet__bits-value {
+  padding: 0.25rem 1.5rem 0.25rem 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+.sheet__bits-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.sheet__note {
+  margin: 0;
+  color: #57534e;
+  font-size: 0.9375rem;
+}
+
+.sheet__terms {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.sheet__definition {
+  display: grid;
+  grid-template-columns: minmax(9ch, 15ch) 1fr;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.sheet__term {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.sheet__meaning {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+/* The annotated name reuses the deck's component, so it needs the ink. */
+
+.sheet .annotated__column {
+  border-top-color: #d6d3d1;
+}
+
+.sheet .annotated__segment {
+  color: #1c1917;
+  font-size: clamp(0.8125rem, 2.4vw, 1.125rem);
+}
+
+.sheet .annotated__label {
+  color: #57534e;
+  font-size: clamp(0.6875rem, 1.8vw, 0.8125rem);
+}
+
+@media print {
+  .sheet {
+    max-width: none;
+    padding: 0;
+    font-size: 10pt;
+  }
+
+  .sheet__block {
+    break-inside: avoid;
+  }
+}
+
+@media (max-width: 30rem) {
+  .sheet__definition {
+    grid-template-columns: 1fr;
+    gap: 0.125rem;
+  }
+}
