@@ -61,8 +61,13 @@ defmodule ModelNameTalkWeb.PlayLive do
     end
   end
 
-  def handle_event("answer", %{"value" => value}, socket) do
-    Room.answer(socket.assigns.token, value)
+  # The choice arrives under "choice", never "value". A button carries a native
+  # value property, LiveView merges it into the event, and a button without one
+  # sends an empty string that would silently overwrite the real answer. The
+  # room would then drop it for not being an option it offers, and nobody,
+  # speaker included, would see anything go wrong.
+  def handle_event("answer", %{"choice" => choice}, socket) do
+    Room.answer(socket.assigns.token, choice)
 
     {:noreply, assign(socket, room: Room.state())}
   end
@@ -101,7 +106,7 @@ defmodule ModelNameTalkWeb.PlayLive do
             :for={option <- @round.options}
             type="button"
             phx-click="answer"
-            phx-value-value={option}
+            phx-value-choice={option}
             disabled={@room.phase != :open}
             class={["play__option", @mine == option && "play__option--mine"]}
           >
@@ -112,7 +117,7 @@ defmodule ModelNameTalkWeb.PlayLive do
         <form :if={@round.type == :numeric} class="play__numeric" phx-submit="answer">
           <input
             class="play__numeric-input"
-            name="value"
+            name="choice"
             inputmode="decimal"
             autocomplete="off"
             disabled={@room.phase != :open}

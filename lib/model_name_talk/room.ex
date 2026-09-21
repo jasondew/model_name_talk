@@ -26,7 +26,8 @@ defmodule ModelNameTalk.Room do
 
   @topic "room"
 
-  defstruct round: nil,
+  defstruct position: {0, 1},
+            round: nil,
             phase: :open,
             opened_at: nil,
             answers: %{},
@@ -55,6 +56,20 @@ defmodule ModelNameTalk.Room do
   @doc "Forgets everything, including who is here. For rehearsals and tests."
   @spec reset() :: :ok
   def reset, do: GenServer.call(__MODULE__, :reset)
+
+  @doc """
+  Remembers where the deck is.
+
+  A window that arrives in the middle of a talk, or one the speaker reloads
+  because something looks stuck, has to come back where the room already is.
+  Broadcasting a move is not enough on its own: nobody is listening yet.
+  """
+  @spec move({non_neg_integer(), pos_integer()}) :: :ok
+  def move(position), do: GenServer.call(__MODULE__, {:move, position})
+
+  @doc "Where the deck is."
+  @spec position() :: {non_neg_integer(), pos_integer()}
+  def position, do: state().position
 
   @doc "How many people are playing, connected or not."
   @spec participant_count(t()) :: non_neg_integer()
@@ -140,6 +155,9 @@ defmodule ModelNameTalk.Room do
   end
 
   def handle_call(:state, _from, room), do: {:reply, room, room}
+
+  def handle_call({:move, position}, _from, room),
+    do: {:reply, :ok, %{room | position: position}}
 
   def handle_call(:reset, _from, _room), do: {:reply, :ok, announce(%__MODULE__{})}
 

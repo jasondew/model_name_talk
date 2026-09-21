@@ -149,4 +149,31 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
 
     assert render(presenter) =~ "ada"
   end
+
+  describe "a window that arrives late" do
+    # Reloading a window mid-talk is a plausible thing to do when something
+    # looks stuck. Until the position was kept somewhere, a reloaded window
+    # came back at the title while the room was on slide four, and the next
+    # arrow press drove the game from the beginning.
+    test "opens where the talk actually is", %{conn: conn} do
+      {:ok, deck, _html} = live(conn, ~p"/")
+      forward(deck, 3)
+
+      {:ok, late, html} = live(conn, ~p"/presenter")
+
+      assert html =~ "slide 3 of"
+      assert render(late) =~ "GPT-2 small"
+    end
+
+    test "a reloaded deck carries on rather than rewinding the game", %{conn: conn} do
+      {:ok, deck, _html} = live(conn, ~p"/")
+      forward(deck, 3)
+
+      {:ok, reloaded, _html} = live(conn, ~p"/")
+      forward(reloaded)
+
+      assert Room.state().round == :how_many_gpt2s
+      assert Room.state().phase == :revealed
+    end
+  end
 end

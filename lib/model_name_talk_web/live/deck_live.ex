@@ -27,7 +27,7 @@ defmodule ModelNameTalkWeb.DeckLive do
 
     {:ok,
      socket
-     |> assign(position: Position.start(), room: Room.state())
+     |> assign(position: Position.current(), room: Room.state())
      |> assign(join_url: Application.get_env(:model_name_talk, :join_url))
      |> assign(page_title: "How to Read a Model Name"), layout: false}
   end

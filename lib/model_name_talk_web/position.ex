@@ -27,9 +27,9 @@ defmodule ModelNameTalkWeb.Position do
   @spec subscribe() :: :ok
   def subscribe, do: PubSub.subscribe(ModelNameTalk.PubSub, @topic)
 
-  @doc "The first slide, first step."
-  @spec start() :: t()
-  def start, do: {0, 1}
+  @doc "Where the talk is, for a window that has just opened."
+  @spec current() :: t()
+  def current, do: Room.position()
 
   @doc "Where the next press lands, and the game moved to match."
   @spec forward(t()) :: t()
@@ -77,6 +77,7 @@ defmodule ModelNameTalkWeb.Position do
   # recomputed from the position rather than nudged by each key press.
   defp settle({index, step} = position) do
     slide = Deck.at(index)
+    Room.move(position)
 
     case {slide.round, step} do
       {nil, _step} -> Room.open(nil)

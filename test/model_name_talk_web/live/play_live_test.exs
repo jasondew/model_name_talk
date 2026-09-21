@@ -53,7 +53,7 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
     view = joined(conn)
     Room.open(:open_weights)
 
-    render_click(view, "answer", %{"value" => "Qwen3"})
+    render_click(view, "answer", %{"value" => "", "choice" => "Qwen3"})
 
     assert Room.state().answers["token-ada"].value == "Qwen3"
     assert render(view) =~ "Locked in"
@@ -63,7 +63,7 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
     view = joined(conn)
     Room.open(:how_many_gigabytes)
 
-    render_submit(view, "answer", %{"value" => "74"})
+    render_submit(view, "answer", %{"choice" => "74"})
 
     assert Room.state().answers["token-ada"].correct?
   end
@@ -71,7 +71,7 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
   test "says how you did once the answer is revealed", %{conn: conn} do
     view = joined(conn)
     Room.open(:open_weights)
-    render_click(view, "answer", %{"value" => "Qwen3"})
+    render_click(view, "answer", %{"value" => "", "choice" => "Qwen3"})
 
     Room.reveal()
 
@@ -81,7 +81,7 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
   test "says you were wrong, and what the answer was", %{conn: conn} do
     view = joined(conn)
     Room.open(:open_weights)
-    render_click(view, "answer", %{"value" => "Claude"})
+    render_click(view, "answer", %{"value" => "", "choice" => "Claude"})
 
     Room.reveal()
 
@@ -93,7 +93,7 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
   test "clears the last round's answer when the next one opens", %{conn: conn} do
     view = joined(conn)
     Room.open(:open_weights)
-    render_click(view, "answer", %{"value" => "Qwen3"})
+    render_click(view, "answer", %{"value" => "", "choice" => "Qwen3"})
 
     Room.open(:how_many_gpt2s)
 
@@ -103,7 +103,7 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
   test "keeps a returning phone's identity and score", %{conn: conn} do
     view = joined(conn)
     Room.open(:open_weights)
-    render_click(view, "answer", %{"value" => "Qwen3"})
+    render_click(view, "answer", %{"value" => "", "choice" => "Qwen3"})
     Room.reveal()
 
     {:ok, returning, _html} = live(conn, ~p"/play")
@@ -127,5 +127,23 @@ defmodule ModelNameTalkWeb.PlayLiveTest do
     render_submit(view, "handle", %{"handle" => "ada"})
 
     assert render(view) =~ "What should we call you"
+  end
+
+  # A real browser merges a button's own value property into the event, and a
+  # button without one sends an empty string. Naming the parameter "value"
+  # meant that empty string overwrote the answer, the room dropped it for not
+  # being an option, and the deck sat there saying nobody had answered. The
+  # tests did not see it because render_click/3 hands the server its params
+  # directly rather than reading them off the button.
+  test "takes the answer from choice, not from the button's own value", %{conn: conn} do
+    view = joined(conn)
+    Room.open(:open_weights)
+
+    assert render(view) =~ "phx-value-choice"
+    refute render(view) =~ "phx-value-value"
+
+    render_click(view, "answer", %{"value" => "", "choice" => "Qwen3"})
+
+    assert Room.state().answers["token-ada"].value == "Qwen3"
   end
 end
