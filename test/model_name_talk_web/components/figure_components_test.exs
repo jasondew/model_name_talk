@@ -46,4 +46,40 @@ defmodule ModelNameTalkWeb.FigureComponentsTest do
       assert html =~ "feed forward"
     end
   end
+
+  describe "the pipeline" do
+    test "draws each stage, arriving one at a time" do
+      stages = ["text corpus", "pre-training", "base", "post-training", "Instruct"]
+
+      early = render_component(&pipeline/1, stages: stages, step: 1)
+      late = render_component(&pipeline/1, stages: stages, step: 5)
+
+      assert early =~ "text corpus"
+      refute early =~ "Instruct"
+      assert late =~ "Instruct"
+    end
+
+    test "puts an arrow between stages and not after the last one" do
+      html = render_component(&pipeline/1, stages: ["one", "two", "three"], step: 3)
+
+      assert count(html, "figure__pipeline-arrow") == 2
+    end
+  end
+
+  describe "the raw chat template" do
+    test "shows the real special tokens rather than a picture of a chat" do
+      html = render_component(&raw_text/1, text: "<|im_start|>user\nhi<|im_end|>", step: 2)
+
+      assert html =~ "im_start"
+      assert html =~ "im_end"
+    end
+
+    test "lights the special tokens on the second step" do
+      early = render_component(&raw_text/1, text: "<|im_start|>hi<|im_end|>", step: 1)
+      later = render_component(&raw_text/1, text: "<|im_start|>hi<|im_end|>", step: 2)
+
+      refute early =~ "raw__special"
+      assert later =~ "raw__special"
+    end
+  end
 end

@@ -121,6 +121,75 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## CHAPTER 5, INSTRUCT
+
+  def slide(%{slide: %Slide{id: :the_pipeline}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.pipeline
+        step={@step}
+        stages={["a great deal of text", "pre-training", "Base", "post-training", "Instruct"]}
+      />
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :chat_template}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.raw_text
+        step={@step}
+        text="<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n"
+      />
+
+      <.step n={2} step={@step}>
+        <p class="slide__caption">The lit parts are just tokens. The model cannot see a message.</p>
+      </.step>
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :demo_base_instruct}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} />
+      <p class="slide__demo">DEMO</p>
+      <p class="slide__caption">One prompt. Qwen3-4B-Base, then Qwen3-4B-Instruct-2507.</p>
+    </section>
+    """
+  end
+
+  # A missing screenshot draws a bordered note saying what belongs there,
+  # rather than a broken image on a projector. The fallback for the demo must
+  # not itself need a fallback.
+  def slide(%{slide: %Slide{id: :demo_base_instruct_fallback}} = assigns) do
+    assigns = assign(assigns, shot: screenshot("demo-base-instruct.png"))
+
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <img
+        :if={@shot}
+        src={@shot}
+        alt="The same prompt sent to a base model and an instruct model"
+        class="slide__shot"
+      />
+
+      <p :if={is_nil(@shot)} class="slide__missing">
+        Rehearsal screenshot goes here: priv/static/images/demo-base-instruct.png
+      </p>
+    </section>
+    """
+  end
+
   ## TERM CARDS
 
   def slide(%{slide: %Slide{id: id}} = assigns) when id in ~w(
@@ -200,6 +269,14 @@ defmodule ModelNameTalkWeb.SlideComponents do
   end
 
   ## PRIVATE FUNCTIONS
+
+  # Nil when the file is not there, so the slide can say what is missing
+  # instead of drawing a broken image in front of a room.
+  defp screenshot(name) do
+    path = Path.join([:code.priv_dir(:model_name_talk), "static", "images", name])
+
+    if File.exists?(path), do: "/images/#{name}", else: nil
+  end
 
   defp answer_line(%Round{type: :choice, answer: answer}), do: "The answer: #{answer}"
 

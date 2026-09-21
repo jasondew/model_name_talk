@@ -121,7 +121,62 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :stages, :list, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  A pipeline: boxes with arrows between them, arriving one stage at a time.
+
+  Pre-training and post-training are two different things that happen in an
+  order, and an order is what a row of arrows says without a sentence.
+  """
+  def pipeline(assigns) do
+    ~H"""
+    <figure class="figure figure--pipeline">
+      <div class="figure__pipeline">
+        <%= for {stage, order} <- Enum.with_index(@stages, 1), order <= @step do %>
+          <span :if={order > 1} class="figure__pipeline-arrow">&rarr;</span>
+          <span class="figure__pipeline-stage">{stage}</span>
+        <% end %>
+      </div>
+    </figure>
+    """
+  end
+
+  attr :text, :string, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  Text exactly as the model receives it, with the special tokens picked out
+  once the slide has been pressed.
+
+  The point of the chat template slide is that a message is not a thing the
+  model knows about: there is one string, and the template is how a
+  conversation gets flattened into it. A drawing of chat bubbles would teach
+  the opposite, so this draws the string.
+  """
+  def raw_text(assigns) do
+    assigns = assign(assigns, parts: split_specials(assigns.text))
+
+    ~H"""
+    <pre class="raw"><%= for {kind, part} <- @parts do %><span class={
+        kind == :special and @step >= 2 and "raw__special"
+      }>{part}</span><% end %></pre>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
+
+  # Chops the text into ordinary runs and `<|...|>` special tokens, keeping
+  # both so the whole string renders exactly as the model would read it.
+  defp split_specials(text) do
+    ~r/<\|[^|]*\|>/
+    |> Regex.split(text, include_captures: true)
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(fn part ->
+      if String.starts_with?(part, "<|"), do: {:special, part}, else: {:plain, part}
+    end)
+  end
 
   defp decades(low, high) do
     low

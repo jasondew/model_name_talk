@@ -280,3 +280,79 @@
 .slide__equation-to {
   color: var(--deck-lit);
 }
+
+/* Pre-training, then post-training. An order, drawn as an order. */
+
+.figure__pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.figure__pipeline-stage {
+  padding: 0.625rem 1.125rem;
+  border: 2px solid var(--deck-line);
+  border-radius: 0.5rem;
+  font-size: clamp(0.9375rem, 1.9vw, 1.625rem);
+  font-weight: 700;
+}
+
+.figure__pipeline-arrow {
+  color: var(--deck-line);
+  font-size: clamp(1.125rem, 2.2vw, 2rem);
+}
+
+/*
+ * The chat template, exactly as the model reads it.
+ *
+ * A picture of chat bubbles would teach the opposite of this slide, so the
+ * slide draws the string.
+ */
+
+.raw {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+  background: #000000;
+  color: var(--deck-ink);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.9375rem, 2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.raw__special {
+  color: var(--deck-lit);
+  font-weight: 800;
+}
+
+/* Demos */
+
+.slide__demo {
+  margin: 0;
+  font-size: clamp(3rem, 12vw, 9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.slide__shot {
+  max-width: 100%;
+  max-height: 60vh;
+  border-radius: 0.5rem;
+  object-fit: contain;
+}
+
+.slide__missing {
+  margin: 0;
+  padding: 3rem 2rem;
+  border: 0.25rem dashed var(--deck-line);
+  border-radius: 0.5rem;
+  color: var(--deck-dim);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.875rem, 1.6vw, 1.25rem);
+  font-weight: 600;
+  text-align: center;
+}
