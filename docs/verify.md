@@ -160,3 +160,9 @@ Round 7's premise is the 12 GB card.
 | Rehearse the join flow on a real phone | not done |
 | Rehearse round 5 and decide whether 45 seconds is right | not done |
 | Produce the three toy model samples for round 6 | not done |
+| Take the rehearsal screenshot for the base-and-instruct demo | not done |
+| Walk the whole deck forwards, then backwards, against the clock | not done |
+
+The last one matters most. The deck this grew out of lost its entire audience
+game four days before the talk for want of a rehearsal, so a rehearsal is a
+task here rather than an intention.

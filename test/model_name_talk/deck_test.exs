@@ -115,4 +115,39 @@ defmodule ModelNameTalk.DeckTest do
 
     assert fallback == demo + 1
   end
+
+  describe "the brief's own rules" do
+    # The brief says one idea for each slide with body text under about
+    # fifteen words. A title that runs long is the first sign a slide is
+    # carrying two ideas.
+    test "no slide title carries more than ten words" do
+      for slide <- Deck.slides() do
+        words = slide.title |> String.split() |> length()
+
+        assert words <= 10, "#{slide.id} has a #{words} word title"
+      end
+    end
+
+    test "every chapter with a segment ends by asking about it" do
+      # Chapter 6 is two minutes and a date stamp. A question there would be
+      # free points costing forty five seconds.
+      for chapter <- [2, 3, 4, 5, 7, 8] do
+        slides = Enum.filter(Deck.slides(), &(&1.chapter == chapter))
+
+        assert List.last(slides).round != nil, "chapter #{chapter} does not close on a round"
+      end
+    end
+
+    test "no slide claims a number that docs/verify.md has not checked" do
+      # The figures that carry numbers name them in one place each, so this
+      # guards the one that would silently rot: round five's band against the
+      # bits for each weight it is derived from.
+      round = ModelNameTalk.Round.fetch(:how_many_gigabytes)
+      {low, high} = round.band
+
+      assert round.answer == 75
+      assert low <= 70.553706560 * 8.5 / 8
+      assert high >= 70.553706560 * 8.5 / 8
+    end
+  end
 end

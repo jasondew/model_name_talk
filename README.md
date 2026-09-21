@@ -108,7 +108,28 @@ wrong, which is feedback a speaker rarely gets.
 - `docs/superpowers/plans/2026-09-21-audience-game.md` the plan this followed
 - `docs/verify.md` every number that still needs a source
 
+## The routes
+
+- `/` the deck, for the screen share
+- `/presenter` notes, clock, pace, and the game's controls
+- `/play` what the audience plays on
+- `/sheet` one page for the room to take away
+
 ## Still to do
 
-The deck is a stub: a title slide and one slide per round. The chapters are
-plan 2, and they get written against a game that already works.
+The talk is written and every slide draws. What is left is rehearsal, and
+`docs/verify.md` holds the list: install `cloudflared`, reserve a hostname,
+read the file name header off a real screen share rather than off the window
+it renders in, join from an actual phone, and decide whether round five's
+forty five seconds is right.
+
+Two pieces of content are still missing and the deck says so where they
+belong. The base-and-instruct demo wants a rehearsal screenshot at
+`priv/static/images/demo-base-instruct.png`; without it the fallback slide
+draws a bordered note naming the file rather than a broken image. And round
+six wants three real samples from the toy model quantised to 8, 4 and 2
+bits, which is work that belongs in `../tiny_llm`.
+
+Any slide nobody has drawn yet renders hatched, with its title and its notes,
+so it announces itself from the back of the room instead of looking
+finished.
