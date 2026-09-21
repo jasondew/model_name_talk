@@ -105,7 +105,8 @@ wrong, which is feedback a speaker rarely gets.
 - `docs/brief.md` the content brief the talk is built from
 - `docs/superpowers/specs/2026-09-21-model-name-talk-design.md` the design,
   including where it knowingly departs from the brief
-- `docs/superpowers/plans/2026-09-21-audience-game.md` the plan this followed
+- `docs/superpowers/plans/2026-09-21-audience-game.md` the game, plan one
+- `docs/superpowers/plans/2026-09-21-the-chapters.md` the slides, plan two
 - `docs/verify.md` every number that still needs a source
 
 ## The routes
