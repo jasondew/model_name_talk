@@ -603,3 +603,35 @@
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
+
+/* A slide that exists to be talked over rather than read. */
+
+.slide__word {
+  margin: 0;
+  font-size: clamp(2.5rem, 9vw, 7.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.slide__word--second {
+  color: var(--deck-lit);
+}
+
+/* Notes on an undrawn slide: one line each, not a run-on paragraph. */
+
+.slide__stub-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 60ch;
+}
+
+.slide__stub-note {
+  color: var(--deck-dim);
+  font-size: clamp(1rem, 1.7vw, 1.375rem);
+  line-height: 1.35;
+}

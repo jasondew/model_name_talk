@@ -22,6 +22,23 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert html =~ "a cue"
   end
 
+  # The stub used to render Slide.prose/1, which joins every note with a space
+  # and runs the sentences into each other with no punctuation between them.
+  test "a stub puts each note on its own line rather than running them together" do
+    unwritten = %Slide{
+      id: :not_a_real_slide,
+      title: "Unwritten",
+      notes: "- the first note\n- the second note\n= term: a meaning\n"
+    }
+
+    html = draw(unwritten)
+
+    assert html =~ "the first note"
+    assert html =~ "the second note"
+    assert html =~ "term: a meaning"
+    refute html =~ "the first note the second note"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

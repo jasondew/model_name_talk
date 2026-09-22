@@ -335,6 +335,22 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## CHAPTER 2, Qwen3
 
+  # Two words, arriving. The explanation is worth more said than read, so it
+  # lives in the notes and the slide stays out of the way.
+  def slide(%{slide: %Slide{id: :what_a_model_is}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} />
+
+      <p class="slide__word">weights</p>
+
+      <.step n={2} step={@step}>
+        <p class="slide__word slide__word--second">architecture</p>
+      </.step>
+    </section>
+    """
+  end
+
   def slide(%{slide: %Slide{id: :lab_and_model}} = assigns) do
     ~H"""
     <section class="slide">
@@ -539,16 +555,31 @@ defmodule ModelNameTalkWeb.SlideComponents do
   # Hatched, so an unwritten slide announces itself from the back of the room
   # rather than crashing or, worse, looking finished.
   def slide(assigns) do
+    assigns = assign(assigns, blocks: Slide.blocks(assigns.slide))
+
     ~H"""
     <section class="slide slide--stub">
       <.filename :if={@slide.chapter} chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-      <p class="slide__stub-notes">{Slide.prose(@slide)}</p>
+
+      <ul class="slide__stub-notes">
+        <%= for block <- @blocks, line <- stub_lines(block) do %>
+          <li class="slide__stub-note">{line}</li>
+        <% end %>
+      </ul>
     </section>
     """
   end
 
   ## PRIVATE FUNCTIONS
+
+  # Definitions read as "term: meaning" on a stub; cues and musts are already
+  # whole lines.
+  defp stub_lines({:definitions, pairs}) do
+    Enum.map(pairs, fn {term, meaning} -> "#{term}: #{meaning}" end)
+  end
+
+  defp stub_lines({_kind, lines}), do: lines
 
   defp segment(chapter) do
     Enum.find(Filename.segments(), &(&1.chapter == chapter))
