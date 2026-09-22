@@ -31,8 +31,8 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ## 1. Opening
 
-- **minutes:** 2
-- **lands:** they know what they will be able to do in forty minutes
+- **minutes:** 3
+- **lands:** the file is a pile of numbers, and they know what they will be able to do with the name
 
 ### `title` How to Read a Model Name
 
@@ -51,29 +51,31 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 - This is a real file you can download today
 ```
 
+### `what_a_model_is` What is in the file
+
+*2 steps*
+
+```
+! That file is a pile of numbers. That is nearly all it is
+! The weights are the numbers training moved
+! The architecture is the small amount of structure that says how to use them
+- Our toy model was both, and you could read all of it in an afternoon
+- Everything the name tells you is a fact about those numbers
+- So the rest of the talk is reading the label on a box of numbers
+```
+
 
 
 ## 2. Qwen3
 
-- **minutes:** 5
-- **lands:** a model is a file of numbers plus a shape, and the lab that made it is not the model
+- **minutes:** 4
+- **lands:** the lab is not the model, and open weights is not open source
 
 ### `qwen3_chapter` Qwen3
 
 ```
 - Read the segment out, then pause
 - Two things in five characters: who made it, and which generation
-```
-
-### `what_a_model_is` Numbers, plus a shape
-
-*2 steps, [stub]*
-
-```
-! The weights are the numbers training moved
-! The architecture is the program that knows what to do with them
-- Our toy model was both, and you could read all of it in an afternoon
-- A checkpoint is just a saved copy of the numbers at one moment
 ```
 
 ### `lab_and_model` The lab is not the model
