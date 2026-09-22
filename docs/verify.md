@@ -138,6 +138,12 @@ name. The same leading number means different things in the two families.
 | Ollama tag default quantization | chapter 8 | Secondary sources agree it is Q4_K_M, but no primary source found. Say "usually" on the slide, or check one tag's manifest. |
 | System RAM 16 GB | round 7 | Speaker's own machine. |
 | Qwen3-4B-Instruct-2507 at Q4_K_M, approximately 2.5 GB | chapter 9 | Not fetched. |
+| OLMo as the open source example | chapter 2, the three kinds table | AI2 publishes data and training code as well as weights, which is the distinction the slide draws, but the claim is not checked against their licence. |
+| Gemma-3-27B, Llama-3.3-70B as family examples | chapter 2 | Names only, no numbers attached. |
+
+A Q6_K row was cut from chapter 7's comparison because its file size was
+predicted rather than measured. Every bar on that slide is a real file from
+the table above. If Q6_K is wanted, fetch the size first.
 
 ## The speaker's hardware
 

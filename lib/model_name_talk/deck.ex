@@ -53,8 +53,9 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 2,
         title: "Qwen3",
-        minutes: 4.75,
-        lands: "a model is a file of numbers plus a shape, and some vendors give you the file",
+        minutes: 5,
+        lands:
+          "a model is a file of numbers plus a shape, and the lab that made it is not the model",
         slides: [
           %Slide{
             id: :qwen3_chapter,
@@ -62,8 +63,7 @@ defmodule ModelNameTalk.Deck do
             chapter: 2,
             notes: """
             - Read the segment out, then pause
-            - Qwen is the family, from the Qwen team at Alibaba. 3 is the generation
-            - One family has many sizes sharing a design and a tokenizer
+            - Two things in five characters: who made it, and which generation
             """
           },
           %Slide{
@@ -74,31 +74,33 @@ defmodule ModelNameTalk.Deck do
             notes: """
             ! The weights are the numbers training moved
             ! The architecture is the program that knows what to do with them
-            - Our toy model was both, and you could read all of it
+            - Our toy model was both, and you could read all of it in an afternoon
             - A checkpoint is just a saved copy of the numbers at one moment
             """
           },
           %Slide{
-            id: :open_or_closed,
-            title: "A file, or an endpoint",
+            id: :lab_and_model,
+            title: "The lab is not the model",
             chapter: 2,
-            steps: 2,
+            steps: 3,
             notes: """
-            - Qwen ships you the weights. You can hold the file
-            - Claude and GPT you reach through an API. There is no file
-            ! Open weights is not open source
-            ! The training data and the training code are almost never published
+            ! Qwen is a team at Alibaba. Qwen3 is a generation. Qwen3-30B-A3B is one model
+            - People say "Qwen" meaning all three and you have to work out which
+            - Same shape everywhere: Meta ships Llama, Google ships Gemma and Gemini
+            - A family shares a design and a tokenizer, not a size
             """
           },
           %Slide{
-            id: :tokens_again,
-            title: "A token is not a word",
+            id: :three_kinds,
+            title: "Three different things people call open",
             chapter: 2,
+            steps: 3,
             notes: """
-            - Quick reminder, we did this properly last time
-            - In the toy model one word was one token, because we chose 32 words
-            - Real models use pieces of words
-            - Qwen3's vocabulary is 151,936 tokens
+            ! Open weights is not open source. This is the slide people get wrong
+            - Closed: you rent it. There is no file and there never will be
+            - Open weights: you get the numbers. Not the data, not the training code
+            - Open source: the recipe too. Rare, and usually smaller models
+            - Qwen3 is open weights. You can run it forever, but you could not rebuild it
             """
           },
           %Slide{
@@ -131,7 +133,7 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 3,
         title: "30B",
-        minutes: 5.75,
+        minutes: 4,
         lands: "a parameter here is the same object as in the toy model, there are just more",
         slides: [
           %Slide{
@@ -147,25 +149,14 @@ defmodule ModelNameTalk.Deck do
             id: :how_big,
             title: "Ours, GPT-2, this one",
             chapter: 3,
-            steps: 3,
+            steps: 4,
             notes: """
             - Our toy model: 15,104 parameters. Counted, not estimated
             - GPT-2 small: 124 million
             - This one: 30,532,122,624
             ! Say out loud that the scale is logarithmic, or the chart lies
             ! Same kind of number as the toy model. About two million times as many
-            """
-          },
-          %Slide{
-            id: :what_it_buys,
-            title: "Memory for certain, capability maybe",
-            chapter: 3,
-            steps: 2,
-            notes: """
-            ! Parameter count causes memory and cost directly. That is arithmetic
-            ! It only suggests capability. That is a trend, not a promise
-            - Closed vendors often do not publish a count at all
-            - Which tells you the number is marketing as much as engineering
+            ! It causes memory directly. It only suggests capability
             """
           },
           %Slide{
@@ -174,7 +165,6 @@ defmodule ModelNameTalk.Deck do
             chapter: 3,
             notes: """
             = parameter count: how many trained numbers the model has
-            = dense model: a model that uses all of its parameters for every token
             """
           },
           %Slide{
@@ -194,7 +184,7 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 4,
         title: "A3B",
-        minutes: 6.75,
+        minutes: 6.5,
         lands: "total parameters set the memory, active parameters set the speed",
         slides: [
           %Slide{
@@ -203,7 +193,7 @@ defmodule ModelNameTalk.Deck do
             chapter: 4,
             notes: """
             - A is for active, and this is the most useful segment in the name
-            - It tells you the model is a Mixture of Experts without saying so
+            - It tells you the model is a Mixture of Experts without using the words
             """
           },
           %Slide{
@@ -247,6 +237,7 @@ defmodule ModelNameTalk.Deck do
             title: "Words so far",
             chapter: 4,
             notes: """
+            = dense model: a model that uses all of its parameters for every token
             = Mixture of Experts: a design where each layer has many small feed forward blocks and each token uses only some
             = expert: one of those feed forward blocks
             = router: the small network that picks the experts for each token
@@ -271,8 +262,8 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 5,
         title: "Instruct",
-        minutes: 5.75,
-        lands: "a base model continues text, and post-training is what makes it answer",
+        minutes: 5.5,
+        lands: "what a model produces is decided after pre-training, not during it",
         slides: [
           %Slide{
             id: :instruct_chapter,
@@ -280,6 +271,7 @@ defmodule ModelNameTalk.Deck do
             chapter: 5,
             notes: """
             - This one is about what was done to the model after it learned to read
+            - And therefore about what comes out when you talk to it
             """
           },
           %Slide{
@@ -292,6 +284,20 @@ defmodule ModelNameTalk.Deck do
             - The toy model did exactly this, on five sentences
             - What falls out is a base model. It continues text
             - Post-training is more training that makes it follow instructions. One sentence is enough
+            """
+          },
+          %Slide{
+            id: :kinds_of_model,
+            title: "What each one gives you back",
+            chapter: 5,
+            steps: 4,
+            notes: """
+            ! Every one of these started as the same base model
+            - Base continues your text. Instruct answers you
+            - Thinking writes its reasoning first, then answers. Slower, more tokens, better on hard problems
+            - Coder is post-trained on code. VL takes images as well as text
+            - Embedding is the odd one: it gives you a vector, not words
+            - it is Gemma's word for instruct, and Chat is the older word
             """
           },
           %Slide{
@@ -339,17 +345,6 @@ defmodule ModelNameTalk.Deck do
             """
           },
           %Slide{
-            id: :other_words,
-            title: "Base, Chat, it, Coder, VL, Distill",
-            chapter: 5,
-            notes: """
-            - Two or three words each, then move on
-            - it is Gemma's word for instruction tuned
-            - VL means it takes images. Distill means trained to copy a bigger model
-            - Do not linger, this is a lookup table not a chapter
-            """
-          },
-          %Slide{
             id: :instruct_terms,
             title: "Words so far",
             chapter: 5,
@@ -378,7 +373,7 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 6,
         title: "2507",
-        minutes: 2,
+        minutes: 1.5,
         lands: "pin the version the way you pin a dependency",
         slides: [
           %Slide{
@@ -387,18 +382,17 @@ defmodule ModelNameTalk.Deck do
             chapter: 6,
             notes: """
             - Year and month. July 2025
-            - Cheapest segment in the name and the one that bites hardest
+            - Quickest chapter in the talk. Do not linger
             """
           },
           %Slide{
             id: :same_name_different_model,
             title: "The name stayed. The model did not.",
             chapter: 6,
-            steps: 3,
+            steps: 2,
             notes: """
             - April 2025: one Qwen3-30B-A3B, with a switch between thinking and not
-            - July 2025: that became two separate models, Instruct-2507 and Thinking-2507
-            - Context went from 32K to 262,144, and natively rather than by extension
+            - July 2025: that became two separate models, and the context went from 32K to 262,144
             ! Pin the model version like you pin a dependency
             ! The date stamp is not the knowledge cutoff. Different thing entirely
             """
@@ -408,8 +402,9 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 7,
         title: "Q4_K_M",
-        minutes: 9,
-        lands: "the formula works, once you put the right number of bits into it",
+        minutes: 12,
+        lands:
+          "quantization is why the model fits at all, and the formula works once you use the right bits",
         slides: [
           %Slide{
             id: :quant_chapter,
@@ -417,7 +412,20 @@ defmodule ModelNameTalk.Deck do
             chapter: 7,
             notes: """
             - The technical centre of the talk. Slow down here
-            - Nine minutes. If you are behind, this is not the chapter to rush
+            - Twelve minutes. If you are behind, take it from chapter 8, not from this
+            """
+          },
+          %Slide{
+            id: :why_quantize,
+            title: "61 GB, and a 12 GB card",
+            chapter: 7,
+            steps: 3,
+            notes: """
+            ! This is why quantization exists. Not to be clever, to make it fit
+            - Qwen3-30B at the precision Qwen released it: 61 GB
+            - The card in my machine holds 12
+            - Quantization is the whole distance between those two numbers
+            - It also makes it faster, which we come back to
             """
           },
           %Slide{
@@ -489,6 +497,19 @@ defmodule ModelNameTalk.Deck do
             """
           },
           %Slide{
+            id: :comparing_types,
+            title: "What the labels actually cost",
+            chapter: 7,
+            steps: 5,
+            notes: """
+            - Same model, same 30.5 billion parameters, four real files
+            - BF16 is what Qwen released. Everything below it is somebody else's conversion
+            ! Q4_K_M is the usual deal and it is under a third the size
+            - Q2_K does fit the 12 GB card, and you would not enjoy it
+            - The bar is bits for each weight, the number beside it is the file on disk
+            """
+          },
+          %Slide{
             id: :does_it_work,
             title: "The formula against real files",
             chapter: 7,
@@ -520,16 +541,6 @@ defmodule ModelNameTalk.Deck do
             - The KV cache stores keys and values for every previous token so they are not recomputed
             - It grows with the context length
             - One sentence only. This is a whole talk on its own and not this one
-            """
-          },
-          %Slide{
-            id: :other_labels,
-            title: "Q8_0, Q5_K_M, IQ4_XS, FP8, AWQ, GPTQ, MLX 4bit",
-            chapter: 7,
-            notes: """
-            - Names only. Do not compare them
-            - The point is recognition: they all sit in this position of a name
-            - If somebody asks which is best, that is a corridor conversation
             """
           },
           %Slide{
@@ -574,7 +585,7 @@ defmodule ModelNameTalk.Deck do
       %Section{
         number: 8,
         title: ".gguf",
-        minutes: 3.75,
+        minutes: 3.5,
         lands: "the format says which program runs it, and the name has two authors",
         slides: [
           %Slide{

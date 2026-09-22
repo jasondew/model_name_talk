@@ -333,6 +333,121 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## CHAPTER 2, Qwen3
+
+  def slide(%{slide: %Slide{id: :lab_and_model}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step}
+        lit="Alibaba"
+        headers={["the lab", "the family", "one model"]}
+        rows={[
+          ["Alibaba", "Qwen3", "Qwen3-30B-A3B"],
+          ["Meta", "Llama", "Llama-3.3-70B"],
+          ["Google", "Gemma, and Gemini", "Gemma-3-27B"]
+        ]}
+      />
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :three_kinds}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step}
+        lit="open weights"
+        headers={["", "what you get", "can you run it", "for example"]}
+        rows={[
+          ["closed", "an endpoint", "no, you rent it", "Claude, GPT"],
+          ["open weights", "the numbers", "yes, forever", "Qwen3, Llama"],
+          ["open source", "numbers, data, code", "yes, and rebuild it", "OLMo"]
+        ]}
+      />
+    </section>
+    """
+  end
+
+  ## CHAPTER 5, the kinds of model
+
+  def slide(%{slide: %Slide{id: :kinds_of_model}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step}
+        lit="Instruct"
+        headers={["in the name", "what comes back"]}
+        rows={[
+          ["Base", "more text, continuing yours"],
+          ["Instruct, it, Chat", "an answer"],
+          ["Thinking", "reasoning first, then an answer"],
+          ["Coder, VL", "code. or it reads images too"],
+          ["Embedding", "a vector, not words at all"]
+        ]}
+      />
+    </section>
+    """
+  end
+
+  ## CHAPTER 7, what the labels cost
+
+  def slide(%{slide: %Slide{id: :why_quantize}} = assigns) do
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} />
+
+      <p class="slide__equation">
+        <span class="slide__equation-to">61 GB</span>
+        <span class="slide__equation-from">of model</span>
+      </p>
+
+      <.step n={2} step={@step}>
+        <p class="slide__equation">
+          <span class="slide__equation-to">12 GB</span>
+          <span class="slide__equation-from">of card</span>
+        </p>
+      </.step>
+
+      <.step n={3} step={@step}>
+        <p class="slide__caption">Quantization is that gap, and nothing else.</p>
+      </.step>
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :comparing_types}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.format_comparison
+        step={@step}
+        formats={[
+          {"BF16", 16.0, 61.1},
+          {"Q8_0", 8.51, 32.48},
+          {"Q4_K_M", 4.86, 18.56},
+          {"Q2_K", 2.95, 11.26}
+        ]}
+      />
+
+      <.step n={5} step={@step}>
+        <p class="slide__caption">One model. Same 30.5 billion parameters every time.</p>
+      </.step>
+    </section>
+    """
+  end
+
   ## CHAPTER OPENERS
 
   # One segment, as large as it goes, under the header it belongs to. These

@@ -283,6 +283,75 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :headers, :list, required: true
+  attr :rows, :list, required: true
+  attr :step, :integer, default: 1
+  attr :lit, :string, default: nil
+
+  @doc """
+  A comparison, one row at a time.
+
+  Three chapters turn on a distinction that is genuinely a table: what you get
+  from a closed model against an open weights one, what each post-trained
+  variant hands back, and what the quantisation labels cost. Prose makes the
+  room hold four things at once; a table lets them look.
+
+  `lit` names the row that is this talk's own answer, so the one the audience
+  came to hear about stands out from its neighbours.
+  """
+  def comparison(assigns) do
+    ~H"""
+    <table class="comparison">
+      <thead>
+        <tr>
+          <th :for={header <- @headers} class="comparison__head">{header}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          :for={{cells, order} <- Enum.with_index(@rows, 1)}
+          :if={order <= @step}
+          class={["comparison__row", hd(cells) == @lit && "comparison__row--lit"]}
+        >
+          <td :for={cell <- cells} class="comparison__cell">{cell}</td>
+        </tr>
+      </tbody>
+    </table>
+    """
+  end
+
+  attr :formats, :list, required: true
+  attr :step, :integer, default: 1
+  attr :widest, :float, default: 16.0
+
+  @doc """
+  What each quantisation label costs, as a bar and a real file size.
+
+  The bar is bits for each weight, which is the thing the label actually
+  chooses. The number beside it is the file that choice produces, measured
+  rather than predicted, so the room can see the formula working before it is
+  shown the formula working.
+  """
+  def format_comparison(assigns) do
+    ~H"""
+    <div class="formats">
+      <div
+        :for={{{label, bits, gigabytes}, order} <- Enum.with_index(@formats, 1)}
+        :if={order <= @step}
+        class="formats__row"
+      >
+        <p class="formats__label">{label}</p>
+        <div class="formats__track">
+          <div class="formats__bar" style={"width: #{bits / @widest * 100}%"}>
+            <span class="formats__bits">{bits}</span>
+          </div>
+        </div>
+        <p class="formats__size">{gigabytes} GB</p>
+      </div>
+    </div>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
 
   # Weights run from minus one to one; the line runs from zero to a hundred.
