@@ -489,3 +489,27 @@
   font-size: clamp(1rem, 2.2vw, 1.875rem);
   font-weight: 700;
 }
+
+/*
+ * A chapter opener: the segment, as large as it goes, with its one line
+ * underneath. The header above it already says where in the name this sits,
+ * so the slide itself needs nothing else.
+ */
+
+.slide__segment {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(3rem, 13vw, 11rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--deck-lit);
+  overflow-wrap: anywhere;
+}
+
+.slide__segment-label {
+  margin: 0;
+  color: var(--deck-dim);
+  font-size: clamp(1.125rem, 2.8vw, 2.25rem);
+  font-weight: 700;
+}

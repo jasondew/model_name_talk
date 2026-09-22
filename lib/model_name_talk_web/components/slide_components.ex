@@ -333,6 +333,28 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## CHAPTER OPENERS
+
+  # One segment, as large as it goes, under the header it belongs to. These
+  # were falling through to the stub, which draws a slide's speaker notes on
+  # screen, so the room was being shown an instruction meant for whoever drew
+  # the slide.
+  def slide(%{slide: %Slide{id: id, chapter: chapter}} = assigns)
+      when not is_nil(chapter) and id in ~w(
+        qwen3_chapter thirty_b_chapter a3b_chapter instruct_chapter
+        date_chapter quant_chapter gguf_chapter
+      )a do
+    assigns = assign(assigns, segment: segment(chapter))
+
+    ~H"""
+    <section class="slide slide--centred">
+      <.filename chapter={@slide.chapter} />
+      <p class="slide__segment">{@segment.text}</p>
+      <p class="slide__segment-label">{@segment.label}</p>
+    </section>
+    """
+  end
+
   ## TERM CARDS
 
   def slide(%{slide: %Slide{id: id}} = assigns) when id in ~w(
@@ -412,6 +434,10 @@ defmodule ModelNameTalkWeb.SlideComponents do
   end
 
   ## PRIVATE FUNCTIONS
+
+  defp segment(chapter) do
+    Enum.find(Filename.segments(), &(&1.chapter == chapter))
+  end
 
   # Verbatim from llama.cpp, ggml/src/ggml-common.h. Quoted rather than
   # paraphrased: the point of the slide is that this is the primary source,

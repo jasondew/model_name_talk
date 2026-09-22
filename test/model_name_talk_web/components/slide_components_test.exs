@@ -37,6 +37,30 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(find(:a3b_chapter)) =~ "filename__segment--current"
   end
 
+  # These were falling through to the stub, which prints a slide's notes on
+  # screen. The notes for a chapter opener said "Chapter title", so the room
+  # would have read an instruction meant for whoever drew the slide.
+  test "every chapter opener draws its segment, and is not a stub" do
+    openers =
+      Deck.slides()
+      |> Enum.filter(&String.ends_with?(to_string(&1.id), "_chapter"))
+
+    assert length(openers) == 7
+
+    for opener <- openers do
+      html = draw(opener)
+
+      refute html =~ "slide--stub", "#{opener.id} is still falling through to the stub"
+      assert html =~ "slide__segment"
+    end
+  end
+
+  test "no slide ever shows its own speaker notes to the room" do
+    for slide <- Deck.slides(), step <- 1..slide.steps do
+      refute draw(slide, step) =~ "Chapter title"
+    end
+  end
+
   test "a term card draws every definition it carries" do
     card = find(:qwen3_terms)
     html = draw(card)

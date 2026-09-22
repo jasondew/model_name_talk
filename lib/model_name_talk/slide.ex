@@ -2,6 +2,12 @@ defmodule ModelNameTalk.Slide do
   @moduledoc """
   One slide.
 
+  Notes are what the speaker says, never what the slide should look like. An
+  undrawn slide falls through to the stub, which puts its notes on screen, so
+  a line like "chapter title, segment very large" is an instruction to
+  whoever draws the slide that the room ends up reading instead. Drawing
+  decisions belong in `ModelNameTalkWeb.SlideComponents`, next to the drawing.
+
   `id` is what the renderer matches on, so a slide's drawing lives in
   `ModelNameTalkWeb.SlideComponents` as a clause named by this atom and
   nowhere else. `steps` is how many presses it takes before the deck moves on,

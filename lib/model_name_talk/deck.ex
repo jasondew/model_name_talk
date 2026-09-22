@@ -61,7 +61,7 @@ defmodule ModelNameTalk.Deck do
             title: "Qwen3",
             chapter: 2,
             notes: """
-            - Chapter title, segment very large
+            - Read the segment out, then pause
             - Qwen is the family, from the Qwen team at Alibaba. 3 is the generation
             - One family has many sizes sharing a design and a tokenizer
             """
@@ -139,8 +139,8 @@ defmodule ModelNameTalk.Deck do
             title: "30B",
             chapter: 3,
             notes: """
-            - Chapter title
             - B is billion. M is million. That is the whole of it
+            - The easiest segment in the name, and the one people over-read
             """
           },
           %Slide{
@@ -202,8 +202,7 @@ defmodule ModelNameTalk.Deck do
             title: "A3B",
             chapter: 4,
             notes: """
-            - Chapter title
-            - A is for active. This segment is the most useful one in the name
+            - A is for active, and this is the most useful segment in the name
             - It tells you the model is a Mixture of Experts without saying so
             """
           },
@@ -227,7 +226,7 @@ defmodule ModelNameTalk.Deck do
             ! There is no maths expert and no French expert
             ! Routing is learned for each token and each layer, and a person usually cannot read it
             - This is the most common wrong idea about MoE, so say it plainly
-            - No figure here on purpose. Drawing a thing to say it does not exist works against you
+            - If somebody asks what expert 47 does, the honest answer is that nobody knows
             """
           },
           %Slide{
@@ -280,8 +279,7 @@ defmodule ModelNameTalk.Deck do
             title: "Instruct",
             chapter: 5,
             notes: """
-            - Chapter title
-            - This segment is about what was done to the model after it learned to read
+            - This one is about what was done to the model after it learned to read
             """
           },
           %Slide{
@@ -336,7 +334,7 @@ defmodule ModelNameTalk.Deck do
             notes: """
             ! There is no such thing as a message as far as the model is concerned
             ! A chat template is text with special tokens around it, and nothing more
-            - Step two lights the special tokens
+            - Press once and the special tokens light up
             - This comes back in chapter 8, because the template ships inside the file
             """
           },
@@ -345,7 +343,7 @@ defmodule ModelNameTalk.Deck do
             title: "Base, Chat, it, Coder, VL, Distill",
             chapter: 5,
             notes: """
-            - Names only, two or three words each
+            - Two or three words each, then move on
             - it is Gemma's word for instruction tuned
             - VL means it takes images. Distill means trained to copy a bigger model
             - Do not linger, this is a lookup table not a chapter
@@ -388,7 +386,7 @@ defmodule ModelNameTalk.Deck do
             title: "2507",
             chapter: 6,
             notes: """
-            - Chapter title. Year and month: July 2025
+            - Year and month. July 2025
             - Cheapest segment in the name and the one that bites hardest
             """
           },
@@ -418,7 +416,7 @@ defmodule ModelNameTalk.Deck do
             title: "Q4_K_M",
             chapter: 7,
             notes: """
-            - Chapter title. This is the technical centre of the talk
+            - The technical centre of the talk. Slow down here
             - Nine minutes. If you are behind, this is not the chapter to rush
             """
           },
@@ -440,7 +438,7 @@ defmodule ModelNameTalk.Deck do
             notes: """
             ! If they remember one thing from this talk, this is it
             - Parameters in billions, answer in gigabytes
-            - Alone on the slide, as large as it will go
+            - Say it once, slowly, and let it sit
             """
           },
           %Slide{
@@ -584,7 +582,7 @@ defmodule ModelNameTalk.Deck do
             title: ".gguf",
             chapter: 8,
             notes: """
-            - Chapter title. The last segment, and the easiest
+            - The last segment, and the easiest
             - GGUF is the single file format of the llama.cpp project
             """
           },
