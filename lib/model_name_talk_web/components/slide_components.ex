@@ -15,11 +15,10 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   use Phoenix.Component
 
-  import ModelNameTalkWeb.DeckComponents, only: [standings: 1]
   import ModelNameTalkWeb.FigureComponents
   import ModelNameTalkWeb.FilenameComponents
 
-  alias ModelNameTalk.{Filename, Room, Round, Slide}
+  alias ModelNameTalk.{Filename, Round, Slide}
 
   attr :n, :integer, required: true
   attr :step, :integer, required: true
@@ -166,31 +165,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
-  # A missing screenshot draws a bordered note saying what belongs there,
-  # rather than a broken image on a projector. The fallback for the demo must
-  # not itself need a fallback.
-  def slide(%{slide: %Slide{id: :demo_base_instruct_fallback}} = assigns) do
-    assigns = assign(assigns, shot: screenshot("demo-base-instruct.png"))
-
-    ~H"""
-    <section class="slide">
-      <.filename chapter={@slide.chapter} />
-      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-
-      <img
-        :if={@shot}
-        src={@shot}
-        alt="The same prompt sent to a base model and an instruct model"
-        class="slide__shot"
-      />
-
-      <p :if={is_nil(@shot)} class="slide__missing">
-        Rehearsal screenshot goes here: priv/static/images/demo-base-instruct.png
-      </p>
-    </section>
-    """
-  end
-
   ## CHAPTER 7, Q4_K_M
 
   def slide(%{slide: %Slide{id: :the_formula}} = assigns) do
@@ -318,17 +292,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
     ~H"""
     <section class="slide slide--centred">
       <.annotated />
-    </section>
-    """
-  end
-
-  def slide(%{slide: %Slide{id: :the_board}} = assigns) do
-    ~H"""
-    <section class="slide">
-      <.filename chapter={@slide.chapter} />
-      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-
-      <.standings standings={Room.standings()} limit={5} />
     </section>
     """
   end
@@ -464,6 +427,49 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## TABLES THE ROOM SHOULD SEE
+
+  def slide(%{slide: %Slide{id: :precision}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step * 2}
+        lit="BF16"
+        headers={["format", "bits", "bytes for each weight"]}
+        rows={[
+          ["FP32", "32", "4"],
+          ["BF16", "16", "2"],
+          ["INT8", "8", "1"],
+          ["4-bit", "4", "0.5"]
+        ]}
+      />
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :which_program}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={3}
+        lit="GGUF"
+        headers={["format", "read by"]}
+        rows={[
+          ["GGUF", "llama.cpp, Ollama, LM Studio"],
+          ["safetensors", "Hugging Face Transformers, vLLM"],
+          ["MLX", "MLX on Apple silicon"]
+        ]}
+      />
+    </section>
+    """
+  end
+
   ## CHAPTER OPENERS
 
   # One segment, as large as it goes, under the header it belongs to. These
@@ -510,6 +516,8 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## ROUNDS
 
+  # A question asked out loud. The room answers by voice or in the chat, and
+  # the second press shows the answer.
   def slide(%{slide: %Slide{round: round}} = assigns) when not is_nil(round) do
     assigns = assign(assigns, round: Round.fetch(round))
 
@@ -524,62 +532,34 @@ defmodule ModelNameTalkWeb.SlideComponents do
           :for={option <- @round.options}
           class={[
             "slide__option",
-            @room.phase == :revealed and option == @round.answer and "slide__option--answer"
+            @step >= 2 and option == @round.answer and "slide__option--answer"
           ]}
         >
           {option}
         </li>
       </ul>
 
-      <p :if={@round.type == :numeric} class="slide__numeric">
-        Type a number on your phone.
-      </p>
-
-      <p :if={@room.phase != :revealed} class="slide__count">
-        {Room.answered_count(@room)} answered
-      </p>
-
-      <div :if={@room.phase == :revealed} class="deck__tally slide__tally">
-        <p :for={{option, count} <- Room.tally(@room)} class="slide__tally-row">
-          <span class="slide__tally-option">{option}</span>
-          <span class="slide__tally-count">{count}</span>
-        </p>
-        <p class="slide__answer">{answer_line(@round)}</p>
-      </div>
+      <p :if={@step >= 2} class="slide__answer">{answer_line(@round)}</p>
     </section>
     """
   end
 
-  ## ANYTHING NOT YET WRITTEN
+  ## EVERYTHING ELSE
 
-  # Hatched, so an unwritten slide announces itself from the back of the room
-  # rather than crashing or, worse, looking finished.
+  # A slide with no drawing of its own is its title, under the header, and
+  # the speaker says the rest. It used to render hatched with its notes on
+  # screen, which was useful while the deck was being written and is wrong in
+  # front of a room.
   def slide(assigns) do
-    assigns = assign(assigns, blocks: Slide.blocks(assigns.slide))
-
     ~H"""
-    <section class="slide slide--stub">
+    <section class="slide slide--centred">
       <.filename :if={@slide.chapter} chapter={@slide.chapter} />
-      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-
-      <ul class="slide__stub-notes">
-        <%= for block <- @blocks, line <- stub_lines(block) do %>
-          <li class="slide__stub-note">{line}</li>
-        <% end %>
-      </ul>
+      <h2 class="slide__title">{@slide.title}</h2>
     </section>
     """
   end
 
   ## PRIVATE FUNCTIONS
-
-  # Definitions read as "term: meaning" on a stub; cues and musts are already
-  # whole lines.
-  defp stub_lines({:definitions, pairs}) do
-    Enum.map(pairs, fn {term, meaning} -> "#{term}: #{meaning}" end)
-  end
-
-  defp stub_lines({_kind, lines}), do: lines
 
   defp segment(chapter) do
     Enum.find(Filename.segments(), &(&1.chapter == chapter))
@@ -598,14 +578,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
       "} block_q8_0;"
     ]
     |> Enum.join("\n")
-  end
-
-  # Nil when the file is not there, so the slide can say what is missing
-  # instead of drawing a broken image in front of a room.
-  defp screenshot(name) do
-    path = Path.join([:code.priv_dir(:model_name_talk), "static", "images", name])
-
-    if File.exists?(path), do: "/images/#{name}", else: nil
   end
 
   defp answer_line(%Round{type: :choice, answer: answer}), do: "The answer: #{answer}"

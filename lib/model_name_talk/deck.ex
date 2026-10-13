@@ -321,16 +321,7 @@ defmodule ModelNameTalk.Deck do
             - Same prompt to Qwen3-4B-Base and Qwen3-4B-Instruct-2507
             - Base continues, Instruct answers
             - Keep it short. Two outputs, then move
-            - If it will not run, next slide has the screenshot
-            """
-          },
-          %Slide{
-            id: :demo_base_instruct_fallback,
-            title: "If the demo will not run",
-            chapter: 5,
-            notes: """
-            - The screenshot, taken during rehearsal
-            - Say the same two sentences you would have said live
+            - If it will not run, say what it would have shown and move on
             """
           },
           %Slide{
@@ -568,18 +559,6 @@ defmodule ModelNameTalk.Deck do
             - 70 times 8.5 over 8. About 75 GB, and the real file is 74.98
             - Anything from 68 to 80 counts, including 70 if they used 8 bits flat
             """
-          },
-          %Slide{
-            id: :round_two_bit,
-            title: "Which one is 2 bit?",
-            chapter: 7,
-            round: :which_is_two_bit,
-            steps: 2,
-            notes: """
-            - Three samples from our own toy model, quantised three ways
-            - Below three bits it falls apart, and you can see it
-            - This replaces a live demo. Safer, and it scores
-            """
           }
         ]
       },
@@ -673,16 +652,6 @@ defmodule ModelNameTalk.Deck do
             - Leave it up while you talk. Do not move on quickly
             - Every segment with its label underneath
             - Read it left to right once, out loud, at normal speed
-            """
-          },
-          %Slide{
-            id: :the_board,
-            title: "The board",
-            chapter: 9,
-            notes: """
-            - Read the top three out loud, by handle
-            - Thank the room for playing
-            - If the game broke, say what you learned anyway
             """
           },
           %Slide{

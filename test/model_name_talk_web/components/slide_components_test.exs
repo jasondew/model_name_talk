@@ -12,31 +12,24 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
 
   defp find(id), do: Enum.find(Deck.slides(), &(&1.id == id))
 
-  test "draws a slide that has no clause of its own as a stub" do
+  # In front of a room an undrawn slide is its title. Its notes are for the
+  # speaker and stay on the presenter view.
+  test "draws a slide with no clause of its own as its title, without its notes" do
     unwritten = %Slide{id: :not_a_real_slide, title: "Unwritten", notes: "- a cue\n"}
 
     html = draw(unwritten)
 
-    assert html =~ "slide--stub"
     assert html =~ "Unwritten"
-    assert html =~ "a cue"
+    refute html =~ "a cue"
+    refute html =~ "slide--stub"
   end
 
-  # The stub used to render Slide.prose/1, which joins every note with a space
-  # and runs the sentences into each other with no punctuation between them.
-  test "a stub puts each note on its own line rather than running them together" do
-    unwritten = %Slide{
-      id: :not_a_real_slide,
-      title: "Unwritten",
-      notes: "- the first note\n- the second note\n= term: a meaning\n"
-    }
+  test "a question slide holds its answer back until the second press" do
+    question = find(:round_open_weights)
 
-    html = draw(unwritten)
-
-    assert html =~ "the first note"
-    assert html =~ "the second note"
-    assert html =~ "term: a meaning"
-    refute html =~ "the first note the second note"
+    refute draw(question, 1) =~ "slide__option--answer"
+    assert draw(question, 2) =~ "slide__option--answer"
+    assert draw(question, 2) =~ "The answer: Qwen3"
   end
 
   test "draws every slide in the deck, at every step, without raising" do
@@ -120,10 +113,6 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     end
 
     assert html =~ "annotated__label"
-  end
-
-  test "the close shows the leaderboard" do
-    assert draw(find(:the_board)) =~ "deck__standings"
   end
 
   test "the magnitude figure marks each model and labels its value" do

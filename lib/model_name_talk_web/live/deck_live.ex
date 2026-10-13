@@ -13,7 +13,6 @@ defmodule ModelNameTalkWeb.DeckLive do
 
   use ModelNameTalkWeb, :live_view
 
-  import ModelNameTalkWeb.DeckComponents
   import ModelNameTalkWeb.SlideComponents
 
   alias ModelNameTalk.{Deck, Room}
@@ -29,7 +28,6 @@ defmodule ModelNameTalkWeb.DeckLive do
     {:ok,
      socket
      |> assign(position: Position.current(), room: Room.state())
-     |> assign(join_url: Application.get_env(:model_name_talk, :join_url))
      |> assign(page_title: "How to Read a Model Name"), layout: false}
   end
 
@@ -53,7 +51,6 @@ defmodule ModelNameTalkWeb.DeckLive do
     ~H"""
     <main class="deck" phx-window-keydown="key">
       <.slide slide={@slide} step={@step} room={@room} />
-      <.join url={@join_url} />
     </main>
     """
   end

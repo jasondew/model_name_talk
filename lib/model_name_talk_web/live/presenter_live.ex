@@ -17,7 +17,6 @@ defmodule ModelNameTalkWeb.PresenterLive do
 
   use ModelNameTalkWeb, :live_view
 
-  import ModelNameTalkWeb.DeckComponents
   import ModelNameTalkWeb.NotesComponents
   import ModelNameTalkWeb.SlideComponents
 
@@ -38,7 +37,6 @@ defmodule ModelNameTalkWeb.PresenterLive do
      socket
      |> assign(position: Position.current(), room: Room.state())
      |> assign(elapsed: 0, running: true)
-     |> assign(join_url: Application.get_env(:model_name_talk, :join_url))
      |> assign(page_title: "Presenter"), layout: false}
   end
 
@@ -85,7 +83,6 @@ defmodule ModelNameTalkWeb.PresenterLive do
       assigns
       |> assign(slide: slide, step: step, section: section)
       |> assign(expected: Deck.minutes_before(section) + section.minutes)
-      |> assign(standings: Room.standings())
 
     ~H"""
     <main class="presenter" phx-window-keydown="key">
@@ -104,25 +101,6 @@ defmodule ModelNameTalkWeb.PresenterLive do
 
       <section class="presenter__desk">
         <.notes slide={@slide} />
-
-        <aside class="presenter__game">
-          <p class="presenter__here">
-            {Room.connected_count(@room)} connected &middot; {Room.participant_count(@room)} playing &middot; {Room.answered_count(
-              @room
-            )} answered
-          </p>
-
-          <div class="presenter__controls">
-            <button type="button" phx-click="lock" disabled={@room.phase != :open}>
-              End the round early
-            </button>
-            <button type="button" phx-click="reveal" disabled={is_nil(@room.round)}>
-              Show the answer
-            </button>
-          </div>
-
-          <.standings standings={@standings} limit={8} />
-        </aside>
       </section>
     </main>
     """

@@ -95,37 +95,33 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
   end
 
   describe "what the room can see" do
-    test "shows the answer count but never the tally before the reveal", %{conn: conn} do
+    test "shows the question without its answer before the second press", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/")
       press_to(view, :round_open_weights)
-      Room.join("token-one", "ada", self())
-      Room.answer("token-one", "Qwen3")
 
       html = render(view)
 
-      assert html =~ "1 answered"
-      refute html =~ "deck__tally"
+      assert html =~ "download the weights"
+      refute html =~ "The answer:"
     end
 
-    test "shows the tally once the answer is up", %{conn: conn} do
+    test "shows the answer on the second press", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/")
       press_to(view, :round_open_weights)
-      Room.join("token-one", "ada", self())
-      Room.answer("token-one", "Qwen3")
 
       forward(view)
 
-      assert render(view) =~ "deck__tally"
+      assert render(view) =~ "The answer: Qwen3"
     end
 
-    test "shows the QR code and the join URL on every slide", %{conn: conn} do
+    # Slides only: there is nothing for the audience to join.
+    test "shows no join code on any slide", %{conn: conn} do
       {:ok, view, html} = live(conn, ~p"/")
 
-      assert html =~ "deck__join"
-      assert html =~ "/play"
+      refute html =~ "deck__join"
 
       press_to(view, :round_open_weights)
-      assert render(view) =~ "deck__join"
+      refute render(view) =~ "deck__join"
     end
   end
 
@@ -165,17 +161,6 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
 
       assert Room.state().round == :open_weights
       assert render(deck) =~ "download the weights"
-    end
-
-    test "the presenter shows the standings", %{conn: conn} do
-      {:ok, deck, _html} = live(conn, ~p"/")
-      {:ok, presenter, _html} = live(conn, ~p"/presenter")
-      press_to(deck, :round_open_weights)
-      Room.join("token-one", "ada", self())
-      Room.answer("token-one", "Qwen3")
-      forward(deck)
-
-      assert render(presenter) =~ "ada"
     end
   end
 
