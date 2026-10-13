@@ -729,3 +729,17 @@
 .fit__verdict {
   color: var(--deck-lit);
 }
+
+/* The formula worked through, a line a press. */
+
+.slide__working {
+  margin: 0;
+  color: var(--deck-dim);
+  font-size: clamp(1.25rem, 3.4vw, 3rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.slide__working-answer {
+  color: var(--deck-lit);
+}

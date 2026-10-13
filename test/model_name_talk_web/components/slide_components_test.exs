@@ -109,6 +109,14 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, slide.steps) =~ "fits</span>"
   end
 
+  test "the formula is worked through to 18.3 GB" do
+    slide = find(:the_formula)
+
+    refute draw(slide, 1) =~ "18.3 GB"
+    assert draw(slide, 2) =~ "4.8 bits"
+    assert draw(slide, 3) =~ "18.3 GB"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

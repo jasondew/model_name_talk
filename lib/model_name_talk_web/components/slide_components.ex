@@ -179,12 +179,23 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## CHAPTER 7, Q4_K_M
 
+  # The formula, then the formula used: Q4_K_M, the file in the title.
   def slide(%{slide: %Slide{id: :the_formula}} = assigns) do
     ~H"""
     <section class="slide slide--centred">
       <.filename chapter={@slide.chapter} />
       <p class="slide__formula">parameters &times; bits to store each parameter</p>
-      <p class="slide__caption">That is bits. Divide by 8 for bytes.</p>
+      <p :if={@step == 1} class="slide__caption">That is bits. Divide by 8 for bytes.</p>
+
+      <.step n={2} step={@step}>
+        <p class="slide__working">30.5 billion &times; 4.8 bits</p>
+      </.step>
+
+      <.step n={3} step={@step}>
+        <p class="slide__working">
+          = 146.6 billion bits &divide; 8 = <span class="slide__working-answer">18.3 GB</span>
+        </p>
+      </.step>
     </section>
     """
   end

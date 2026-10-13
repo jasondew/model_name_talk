@@ -434,11 +434,13 @@ defmodule ModelNameTalk.Deck do
             id: :the_formula,
             title: "parameters x bits",
             chapter: 7,
+            steps: 3,
             notes: """
             ! If they remember one thing from this talk, this is it
-            - Parameters in billions times bits for each, divided by 8, gives gigabytes
-            - 30.5B at 16 bits is 488 billion bits, over 8 is 61 GB. That is the release
             - Say it once, slowly, and let it sit
+            - Second press: use it on the file in the title. 30.5 billion parameters, Q4_K_M is about 4.8 bits each
+            - Third press: 146.6 billion bits, divide by 8 for bytes, 18.3 GB
+            - The real file is 18.56 GB. We come back to how close that is
             """
           },
           %Slide{
