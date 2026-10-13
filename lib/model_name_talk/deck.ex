@@ -429,11 +429,12 @@ defmodule ModelNameTalk.Deck do
           },
           %Slide{
             id: :the_formula,
-            title: "parameters x bits / 8",
+            title: "parameters x bytes",
             chapter: 7,
             notes: """
             ! If they remember one thing from this talk, this is it
-            - Parameters in billions, answer in gigabytes
+            - Parameters in billions, bytes for each weight, answer in gigabytes
+            - The rest of the chapter talks in bits. A byte is 8 of them: BF16 is 2 bytes, Q8_0 just over 1, Q4_K_M about 0.6
             - Say it once, slowly, and let it sit
             """
           },
@@ -552,7 +553,7 @@ defmodule ModelNameTalk.Deck do
             notes: """
             ! Say out loud that this is the no rush round. No speed bonus on this one
             - Forty five seconds. Let them actually do the arithmetic
-            - 70 times 8.5 over 8. About 75 GB, and the real file is 74.98
+            - 8.5 bits is just over a byte, 1.06. So 70 times 1.06, about 75 GB, and the real file is 74.98
             - Anything from 68 to 80 counts, including 70 if they used 8 bits flat
             """
           }

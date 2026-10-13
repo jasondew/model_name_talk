@@ -161,7 +161,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
     ~H"""
     <section class="slide slide--centred">
       <.filename chapter={@slide.chapter} />
-      <p class="slide__formula">parameters &times; bits &divide; 8</p>
+      <p class="slide__formula">parameters &times; bytes</p>
       <p class="slide__caption">billions in, gigabytes out</p>
     </section>
     """
