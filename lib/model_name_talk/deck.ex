@@ -320,11 +320,13 @@ defmodule ModelNameTalk.Deck do
             id: :chat_template,
             title: "The model only ever sees one string",
             chapter: 5,
-            steps: 2,
+            steps: 3,
             notes: """
             ! There is no such thing as a message as far as the model is concerned
             ! A chat template is text with special tokens around it, and nothing more
-            - Press once and the special tokens light up
+            - First press: this is everything you send. It stops at the assistant's turn
+            - Second press: the model writes the rest, and ends it with <|im_end|> itself
+            - Third press: the special tokens light up. Each is one token, ids 151644 and 151645
             - This comes back in chapter 8, because the template ships inside the file
             """
           },

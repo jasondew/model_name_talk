@@ -72,6 +72,15 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert html =~ "user\nWhat is the capital"
   end
 
+  test "the chat template sends the question, then shows the reply, then lights the tokens" do
+    slide = find(:chat_template)
+
+    refute draw(slide, 1) =~ "Paris"
+    assert draw(slide, 2) =~ "The capital of France is Paris."
+    refute draw(slide, 2) =~ "raw__special"
+    assert draw(slide, 3) =~ "raw__special"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

@@ -144,12 +144,11 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <.raw_text
-        step={@step}
-        text={chat_template_text()}
-      />
+      <%!-- What you send, then what the model writes back, then the special
+           tokens light up. --%>
+      <.raw_text step={if @step >= 3, do: 2, else: 1} text={chat_template_text(@step)} />
 
-      <.step n={2} step={@step}>
+      <.step n={3} step={@step}>
         <p class="slide__caption">The lit parts are just tokens. The model cannot see a message.</p>
       </.step>
     </section>
@@ -555,11 +554,26 @@ defmodule ModelNameTalkWeb.SlideComponents do
   # A function rather than an inline attribute: mix format rewrites a string
   # in braces into a plain HTML attribute, where a backslash n is two literal
   # characters, and the slide then showed one long line with "\n" printed in it.
-  defp chat_template_text do
+  # Verbatim from the chat template in Qwen3-30B-A3B-Instruct-2507's
+  # tokenizer_config.json: a line break after the role and after each
+  # <|im_end|>, no default system message, no think tags. The reply itself is
+  # illustrative. Kept in a function because mix format rewrites a braced
+  # string into a plain HTML attribute, where a backslash n stops being a
+  # line break.
+  defp chat_template_text(step) when step < 2 do
     """
     <|im_start|>user
     What is the capital of France?<|im_end|>
     <|im_start|>assistant\
+    """
+  end
+
+  defp chat_template_text(_step) do
+    """
+    <|im_start|>user
+    What is the capital of France?<|im_end|>
+    <|im_start|>assistant
+    The capital of France is Paris.<|im_end|>\
     """
   end
 
