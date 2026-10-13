@@ -28,7 +28,7 @@ defmodule ModelNameTalkWeb.DeckLive do
     {:ok,
      socket
      |> assign(position: Position.current(), room: Room.state())
-     |> assign(page_title: "How to Read a Model Name"), layout: false}
+     |> assign(page_title: "What's in a name?"), layout: false}
   end
 
   @impl true

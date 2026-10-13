@@ -32,7 +32,7 @@ defmodule ModelNameTalk.Deck do
         slides: [
           %Slide{
             id: :title,
-            title: "How to Read a Model Name",
+            title: "What's in a name?",
             notes: """
             - Say the title once, then stop
             ! By the end you can read any of these and say whether it fits on your machine

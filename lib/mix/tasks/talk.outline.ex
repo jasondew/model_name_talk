@@ -64,7 +64,7 @@ defmodule Mix.Tasks.Talk.Outline do
     minutes = Deck.sections() |> Enum.map(& &1.minutes) |> Enum.sum()
 
     """
-    # How to Read a Model Name
+    # What's in a name?
 
     #{minutes} minutes, #{length(slides)} slides, #{Enum.count(slides, & &1.round)} rounds, #{slides |> Enum.flat_map(&Slide.definitions/1) |> length()} terms.
 

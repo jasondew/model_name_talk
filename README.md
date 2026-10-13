@@ -1,4 +1,4 @@
-# How to Read a Model Name
+# What's in a name?
 
 The deck for a 45 minute talk that decodes one file name, left to right:
 

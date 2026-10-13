@@ -1,4 +1,4 @@
-# How to Read a Model Name
+# What's in a name?
 
 42.0 minutes, 49 slides, 6 rounds, 25 terms.
 
@@ -34,7 +34,7 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 - **minutes:** 3
 - **lands:** the file is a pile of numbers, and they know what they will be able to do with the name
 
-### `title` How to Read a Model Name
+### `title` What's in a name?
 
 ```
 - Say the title once, then stop
