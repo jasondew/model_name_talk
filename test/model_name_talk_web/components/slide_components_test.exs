@@ -91,6 +91,16 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, slide.steps) =~ "its own block of 32"
   end
 
+  test "the memory and speed slide adds up to 30.5B stored and 3.3B used" do
+    slide = find(:memory_and_speed)
+
+    refute draw(slide, 1) =~ "128 of them"
+    assert draw(slide, 3) =~ "30.5B"
+    assert draw(slide, 3) =~ "3.3B"
+    refute draw(slide, 3) =~ "slide__equation"
+    assert draw(slide, slide.steps) =~ "slide__equation"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

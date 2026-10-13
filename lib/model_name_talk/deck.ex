@@ -229,15 +229,14 @@ defmodule ModelNameTalk.Deck do
             id: :memory_and_speed,
             title: "Total sets memory. Active sets speed.",
             chapter: 4,
-            steps: 2,
+            steps: 4,
             notes: """
+            - First press: the shared part. Attention, embeddings, the router. Every token uses all of it
+            - Second press: the experts. 128 of them stored, only 8 used for any one token
+            - Third press: add it up. 30.5B stored, 3.3B used. That 3.3B is the A3B in the name
+            ! 3B is not one expert. It is 8 small experts plus the shared part every token uses
             ! Every expert has to be in memory, because the next token may want a different one
-            ! But each token only uses about 3B of those 30B parameters
-            ! 3B is not one expert. It is 8 small experts plus the attention and embeddings every token uses
-            - Each expert is about 226M across all 48 layers. All 128 of them are 29B, 95% of the model
-            - Total is 1.5B shared plus 128 experts. Active is the same 1.5B plus 8
-            - So it costs a 30B model to hold and runs near the speed of a 3B one
-            - Attention is not split. Every token uses all of it
+            - Fourth press: total sets memory, active sets speed. That is the whole chapter
             - If a name has no A segment, assume dense
             """
           },

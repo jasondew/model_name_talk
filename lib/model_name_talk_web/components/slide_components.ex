@@ -107,20 +107,34 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   # Two lines, and the largest type in the deck. This is the chapter, and
   # everything before it exists to make these two lines mean something.
+  # The accounting, a row a press, then the two lines it adds up to. Numbers
+  # are computed from the model's config.json and land on the published
+  # 30.5B and 3.3B; the working is in docs/verify.md.
   def slide(%{slide: %Slide{id: :memory_and_speed}} = assigns) do
     ~H"""
-    <section class="slide slide--centred">
+    <section class="slide">
       <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <p class="slide__equation">
-        <span class="slide__equation-from">Total parameters</span>
-        <span class="slide__equation-arrow">&rarr;</span>
-        <span class="slide__equation-to">memory</span>
-      </p>
+      <.comparison
+        step={@step}
+        lit="total"
+        headers={["", "stored", "used for each token"]}
+        rows={[
+          ["shared: attention, embeddings, router", "1.5B", "1.5B"],
+          ["experts, about 0.23B each", "128 of them: 29.0B", "8 of them: 1.8B"],
+          ["total", "30.5B", "3.3B"]
+        ]}
+      />
 
-      <.step n={2} step={@step}>
+      <.step n={4} step={@step}>
         <p class="slide__equation">
-          <span class="slide__equation-from">Active parameters</span>
+          <span class="slide__equation-from">30.5B stored</span>
+          <span class="slide__equation-arrow">&rarr;</span>
+          <span class="slide__equation-to">memory</span>
+        </p>
+        <p class="slide__equation">
+          <span class="slide__equation-from">3.3B used</span>
           <span class="slide__equation-arrow">&rarr;</span>
           <span class="slide__equation-to">speed</span>
         </p>
