@@ -477,6 +477,36 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  ## QUANTIZATION, MEASURED
+
+  # Real output from the toy model, quantized and generated from a fixed seed.
+  # docs/experiments/quantise_toy.exs reproduces every number here.
+  def slide(%{slide: %Slide{id: :quality_and_speed}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step}
+        variant="sentences"
+        headers={["", "grammatical", "one sentence it wrote, same seed"]}
+        rows={[
+          ["full precision", "91%", "the small grumpy llamas are hungry ."],
+          ["8 bits", "92%", "the small grumpy llamas are hungry ."],
+          ["4 bits", "91%", "the small grumpy llamas are hungry ."],
+          ["3 bits", "88%", "the hungry grumpy llamas are hungry ."],
+          ["2 bits", "75%", "a goose who who is small ignores the hungry ."]
+        ]}
+      />
+
+      <.step n={5} step={@step}>
+        <p class="slide__caption">Fine to 4 bits. Drifting at 3. Broken at 2.</p>
+      </.step>
+    </section>
+    """
+  end
+
   ## TABLES THE ROOM SHOULD SEE
 
   # What each number format is, bit by bit. The ranges and the values 0.1

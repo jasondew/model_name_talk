@@ -526,13 +526,19 @@ defmodule ModelNameTalk.Deck do
           },
           %Slide{
             id: :quality_and_speed,
-            title: "Rules of thumb, and they are rules of thumb",
+            title: "Our model, quantized",
             chapter: 7,
+            steps: 5,
             notes: """
-            ! Say out loud that these are rules of thumb, not measurements
-            - 8 bits is nearly lossless. 4 bits is the usual deal
-            - Below about 3 bits quality falls off a cliff
-            - Quantising also makes it faster. Generation is memory bandwidth bound, fewer bytes to move
+            - This is the toy model from last time, really quantized and really measured. Not a mock up
+            - Blocks of 32, a scale and a minimum each, the same idea llama.cpp uses
+            - Same seed every row, so the only thing that changes is the bits
+            ! Down to 4 bits it writes the exact same sentence
+            - At 3 it starts to drift: hungry where it said small
+            ! At 2 it falls apart: "a goose who who is small ignores the hungry"
+            - The percentage is how many of 500 sentences were grammatical. 8 bits beating full precision is noise
+            - Caveat: 15 thousand parameters. Big models degrade differently, but the rule of thumb has the same shape
+            - Smaller is also faster. Generating is limited by moving weights from memory, and there are fewer bytes to move
             """
           },
           %Slide{

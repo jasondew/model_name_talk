@@ -130,6 +130,14 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert last =~ "0.1001"
   end
 
+  test "the quantized toy model holds to 4 bits and breaks at 2" do
+    slide = find(:quality_and_speed)
+
+    refute draw(slide, 1) =~ "who who"
+    assert draw(slide, slide.steps) =~ "who who"
+    assert draw(slide, slide.steps) =~ "Broken at 2"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

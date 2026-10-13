@@ -30,6 +30,27 @@ makes its comparison approximately 2.0 million times rather than 2.3 million.
 **Round 5's answer is 75 GB, not 74.** The real file is 74.98 GB. The band
 covers the whole reasonable spread either way; only the stated answer moved.
 
+## Quantizing the toy model
+
+Measured, not estimated: `docs/experiments/quantise_toy.exs` quantizes the
+trained `tiny_llm` checkpoint in blocks of 32 with a scale and a minimum each,
+matrices only, then generates 500 sentences at temperature 1.0 from a fixed
+seed and scores them with `TinyLlm.Eval`.
+
+| Precision | Grammatical | Agreement, 338 probes | One sentence, same seed |
+|---|---|---|---|
+| full | 91.4% | 94.4% | the small grumpy llamas are hungry . |
+| 8 bits | 92.4% | 94.4% | the small grumpy llamas are hungry . |
+| 6 bits | 91.0% | 94.1% | the small grumpy llamas are hungry . |
+| 4 bits | 90.8% | 94.4% | the small grumpy llamas are hungry . |
+| 3 bits | 87.6% | 94.1% | the hungry grumpy llamas are hungry . |
+| 2 bits | 75.0% | 92.6% | a goose who who is small ignores the hungry . |
+
+8 bits scoring a point above full precision is sampling noise, not an
+improvement. The model has 15,104 parameters, and the brief's warning stands:
+a model this small need not degrade the way a large one does. The shape here
+happens to match the usual rule of thumb.
+
 ## Number formats
 
 Computed with Python's struct module, rounding to nearest even for BF16.
