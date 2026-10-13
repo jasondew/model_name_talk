@@ -253,7 +253,7 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ### `the_pipeline` Corpus, base, then this
 
-*3 steps*
+*5 steps*
 
 ```
 - Pre-training is next token prediction over an enormous pile of text

@@ -284,7 +284,7 @@ defmodule ModelNameTalk.Deck do
             id: :the_pipeline,
             title: "Corpus, base, then this",
             chapter: 5,
-            steps: 3,
+            steps: 5,
             notes: """
             - Pre-training is next token prediction over an enormous pile of text
             - The toy model did exactly this, on five sentences

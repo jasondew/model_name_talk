@@ -40,7 +40,11 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     # The header always says Instruct, so look for the stage itself.
     stage = ~s(<span class="figure__pipeline-stage">Instruct</span>)
 
-    refute draw(pipeline, 1) =~ stage
+    first = draw(pipeline, 1)
+
+    assert first =~ ~s(<span class="figure__pipeline-stage">a great deal of text</span>)
+    refute first =~ ~s(<span class="figure__pipeline-stage">pre-training</span>)
+    refute first =~ stage
     assert draw(pipeline, pipeline.steps) =~ stage
   end
 
