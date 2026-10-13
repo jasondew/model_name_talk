@@ -1,0 +1,638 @@
+/*
+ * Figures.
+ *
+ * The brief's rule is diagrams before bullets, so every figure here replaces
+ * a list the slide would otherwise have carried. Each arrives a piece at a
+ * time: a diagram that appears complete is one the room reads ahead of the
+ * speaker.
+ *
+ * Colour has one job for each figure. Magnitude gets a single hue and
+ * nothing else wears the accent.
+ */
+
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+/*
+ * Sizes four orders of magnitude apart.
+ *
+ * Dots rather than bars. A bar claims magnitude by its length from zero, and
+ * a logarithmic axis has no zero, so log-scaled bars quietly understate the
+ * gap: fifteen thousand came out roughly half the length of thirty billion.
+ * A dot has no length and makes no such claim. The decades are drawn so the
+ * scale is visible rather than asserted underneath.
+ */
+
+.magnitude {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  padding-top: 2.5rem;
+}
+
+.magnitude__grid {
+  position: absolute;
+  inset: 0 0 0 0;
+  margin-left: 14ch;
+  pointer-events: none;
+}
+
+.magnitude__decade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--deck-line);
+}
+
+.magnitude__decade-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateX(-50%);
+  color: var(--deck-dim);
+  font-size: clamp(0.75rem, 1.2vw, 1rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.magnitude__row {
+  display: grid;
+  grid-template-columns: 14ch 1fr;
+  align-items: center;
+  gap: 0;
+}
+
+.magnitude__label {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.8vw, 1.5rem);
+  font-weight: 700;
+}
+
+.magnitude__track {
+  position: relative;
+  height: clamp(1.75rem, 3.5vh, 2.75rem);
+}
+
+.magnitude__dot {
+  position: absolute;
+  top: 50%;
+  width: clamp(1rem, 1.8vw, 1.5rem);
+  height: clamp(1rem, 1.8vw, 1.5rem);
+  border-radius: 50%;
+  background: var(--deck-lit);
+  transform: translate(-50%, -50%);
+}
+
+.magnitude__value {
+  position: absolute;
+  top: 50%;
+  margin-left: clamp(1rem, 1.8vw, 1.5rem);
+  color: var(--deck-ink);
+  font-size: clamp(0.875rem, 1.5vw, 1.25rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+/* Term cards */
+
+.terms {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25vh;
+}
+
+.terms__row {
+  display: grid;
+  grid-template-columns: minmax(8ch, 22ch) 1fr;
+  gap: 1.5rem;
+  align-items: baseline;
+}
+
+.terms__term {
+  margin: 0;
+  color: var(--deck-lit);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.9375rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+}
+
+.terms__meaning {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.7vw, 1.4375rem);
+  line-height: 1.3;
+}
+
+/* A slide nobody has drawn yet */
+
+.slide--stub {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 12px,
+    rgba(250, 250, 249, 0.06) 12px,
+    rgba(250, 250, 249, 0.06) 24px
+  );
+  outline: 0.25rem dashed var(--deck-line);
+  outline-offset: 1.5rem;
+}
+
+.slide__stub-notes {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--deck-dim);
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  line-height: 1.4;
+}
+
+/* Shared slide furniture */
+
+.slide--centred {
+  justify-content: center;
+}
+
+.slide__filename-huge {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1.5rem, 4.6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.slide__title--small {
+  font-size: clamp(1.5rem, 3.2vw, 2.75rem);
+}
+
+.slide__caption {
+  margin: 0;
+  color: var(--deck-lit);
+  font-size: clamp(1.125rem, 2.4vw, 2rem);
+  font-weight: 700;
+}
+
+.step {
+  display: contents;
+}
+
+/*
+ * A Mixture of Experts layer, beside a dense one.
+ *
+ * The grid is the argument. A hundred and twenty eight squares with eight lit
+ * says "most of this model sits still for any given token" faster than a
+ * sentence can, and drawing the dense block at the same height means the
+ * comparison needs no caption.
+ */
+
+.slide__pair {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3vw;
+  align-items: stretch;
+}
+
+.figure__moe {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.figure__router {
+  margin: 0;
+  padding: 0.5rem 0;
+  border: 2px solid var(--deck-dim);
+  border-radius: 0.5rem;
+  color: var(--deck-dim);
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.figure__grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 2px;
+  align-content: center;
+}
+
+.figure__expert {
+  aspect-ratio: 1;
+  border-radius: 1px;
+  background: var(--deck-line);
+}
+
+.figure__expert--active {
+  background: var(--deck-lit);
+}
+
+.figure__dense {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--deck-line);
+  color: var(--deck-ink);
+  font-size: clamp(0.9375rem, 1.6vw, 1.375rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.figure__moe-caption {
+  margin: 0;
+  color: var(--deck-dim);
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Total to memory, active to speed. The two lines the chapter exists for. */
+
+.slide__equation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 3.5rem);
+  font-weight: 800;
+}
+
+.slide__equation-from {
+  color: var(--deck-dim);
+}
+
+.slide__equation-arrow {
+  color: var(--deck-line);
+}
+
+.slide__equation-to {
+  color: var(--deck-lit);
+}
+
+/* Pre-training, then post-training. An order, drawn as an order. */
+
+.figure__pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.figure__pipeline-stage {
+  padding: 0.625rem 1.125rem;
+  border: 2px solid var(--deck-line);
+  border-radius: 0.5rem;
+  font-size: clamp(0.9375rem, 1.9vw, 1.625rem);
+  font-weight: 700;
+}
+
+.figure__pipeline-arrow {
+  color: var(--deck-line);
+  font-size: clamp(1.125rem, 2.2vw, 2rem);
+}
+
+/*
+ * The chat template, exactly as the model reads it.
+ *
+ * A picture of chat bubbles would teach the opposite of this slide, so the
+ * slide draws the string.
+ */
+
+.raw {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+  background: #000000;
+  color: var(--deck-ink);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.9375rem, 2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.raw__special {
+  color: var(--deck-lit);
+  font-weight: 800;
+}
+
+/* Demos */
+
+.slide__demo {
+  margin: 0;
+  font-size: clamp(3rem, 12vw, 9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.slide__shot {
+  max-width: 100%;
+  max-height: 60vh;
+  border-radius: 0.5rem;
+  object-fit: contain;
+}
+
+.slide__missing {
+  margin: 0;
+  padding: 3rem 2rem;
+  border: 0.25rem dashed var(--deck-line);
+  border-radius: 0.5rem;
+  color: var(--deck-dim);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.875rem, 1.6vw, 1.25rem);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* The formula. One line, the largest thing in the deck. */
+
+.slide__formula {
+  margin: 0;
+  text-wrap: balance;
+  font-size: clamp(2rem, 7vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Weights on a number line, and the levels four bits can reach. */
+
+.line {
+  position: relative;
+  height: clamp(4rem, 9vh, 7rem);
+  margin: 2vh 0;
+  border-bottom: 2px solid var(--deck-line);
+}
+
+.figure__level {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 1.25rem;
+  background: var(--deck-line);
+  transform: translateX(-50%);
+}
+
+.figure__weight {
+  position: absolute;
+  bottom: 0;
+  width: clamp(0.875rem, 1.5vw, 1.25rem);
+  height: clamp(0.875rem, 1.5vw, 1.25rem);
+  border-radius: 50%;
+  background: var(--deck-lit);
+  transform: translate(-50%, 50%);
+  transition: left 400ms ease;
+}
+
+/* The label, taken apart. */
+
+.anatomy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vw;
+}
+
+.anatomy__part {
+  flex: 1 1 14ch;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.anatomy__text {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 800;
+  color: var(--deck-line);
+}
+
+.anatomy__text--explained {
+  color: var(--deck-lit);
+}
+
+.anatomy__meaning {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.6vw, 1.375rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* The formula against real files. The chapter's argument. */
+
+.accuracy {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.9375rem, 1.9vw, 1.625rem);
+}
+
+.accuracy__head {
+  padding: 0.5rem 1rem 0.5rem 0;
+  border-bottom: 2px solid var(--deck-line);
+  color: var(--deck-dim);
+  font-size: clamp(0.75rem, 1.3vw, 1.0625rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.accuracy__row td {
+  padding: 0.75rem 1rem 0.75rem 0;
+  border-bottom: 1px solid var(--deck-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.accuracy__label {
+  font-weight: 700;
+}
+
+.accuracy__real {
+  font-weight: 800;
+}
+
+.accuracy__predicted {
+  color: var(--deck-dim);
+}
+
+.accuracy__error {
+  color: var(--deck-lit);
+  font-weight: 800;
+}
+
+/* One GGUF file, and everything that travels inside it. */
+
+.file-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.75rem;
+  border: 0.25rem solid var(--deck-dim);
+  border-radius: 0.75rem;
+}
+
+.file-box__part {
+  padding: 1.125rem 1.5rem;
+  border-radius: 0.375rem;
+  background: var(--deck-line);
+  font-size: clamp(1rem, 2.2vw, 1.875rem);
+  font-weight: 700;
+}
+
+/*
+ * A chapter opener: the segment, as large as it goes, with its one line
+ * underneath. The header above it already says where in the name this sits,
+ * so the slide itself needs nothing else.
+ */
+
+.slide__segment {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(3rem, 13vw, 11rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--deck-lit);
+  overflow-wrap: anywhere;
+}
+
+.slide__segment-label {
+  margin: 0;
+  color: var(--deck-dim);
+  font-size: clamp(1.125rem, 2.8vw, 2.25rem);
+  font-weight: 700;
+}
+
+/*
+ * A comparison.
+ *
+ * Three chapters turn on a distinction that is genuinely a table. Prose makes
+ * the room hold four things at once; a table lets them look.
+ */
+
+.comparison {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.875rem, 1.9vw, 1.625rem);
+}
+
+.comparison__head {
+  padding: 0.5rem 1.25rem 0.5rem 0;
+  border-bottom: 2px solid var(--deck-line);
+  color: var(--deck-dim);
+  font-size: clamp(0.6875rem, 1.2vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.comparison__cell {
+  padding: 0.875rem 1.25rem 0.875rem 0;
+  border-bottom: 1px solid var(--deck-line);
+  vertical-align: top;
+}
+
+.comparison__row:first-child .comparison__cell {
+  font-weight: 700;
+}
+
+.comparison__row--lit .comparison__cell {
+  color: var(--deck-lit);
+  font-weight: 800;
+}
+
+/* What each quantisation label costs. */
+
+.formats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+.formats__row {
+  display: grid;
+  grid-template-columns: minmax(6ch, 9ch) 1fr minmax(6ch, 9ch);
+  align-items: center;
+  gap: 1rem;
+}
+
+.formats__label {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.9375rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+}
+
+.formats__track {
+  height: clamp(1.75rem, 4vh, 3rem);
+}
+
+.formats__bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding-right: 0.625rem;
+  border-radius: 0.25rem;
+  background: var(--deck-lit);
+}
+
+.formats__bits {
+  color: var(--deck-ground);
+  font-size: clamp(0.75rem, 1.4vw, 1.125rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.formats__size {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.7vw, 1.4375rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* A slide that exists to be talked over rather than read. */
+
+.slide__word {
+  margin: 0;
+  font-size: clamp(2.5rem, 9vw, 7.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.slide__word--second {
+  color: var(--deck-lit);
+}
+
+/* Notes on an undrawn slide: one line each, not a run-on paragraph. */
+
+.slide__stub-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 60ch;
+}
+
+.slide__stub-note {
+  color: var(--deck-dim);
+  font-size: clamp(1rem, 1.7vw, 1.375rem);
+  line-height: 1.35;
+}
