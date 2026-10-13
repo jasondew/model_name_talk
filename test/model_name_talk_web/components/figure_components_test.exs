@@ -11,30 +11,45 @@ defmodule ModelNameTalkWeb.FigureComponentsTest do
   end
 
   describe "the expert grid" do
+    @tokens [[3, 9, 20], [4, 9, 30], [5, 6, 7]]
+
     test "draws every expert" do
-      html = render_component(&expert_grid/1, experts: 128, active: [3, 9, 20], step: 3)
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 3)
 
       assert count(html, "figure__expert") == 128
     end
 
-    test "lights only the experts the router picked" do
-      html = render_component(&expert_grid/1, experts: 128, active: [3, 9, 20], step: 3)
+    test "lights the first token's experts on the third press" do
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 3)
 
       assert count(html, "figure__expert figure__expert--active") == 3
+      refute html =~ "figure__expert--used"
     end
 
     test "lights nothing before the router has run" do
-      html = render_component(&expert_grid/1, experts: 128, active: [3, 9, 20], step: 1)
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 1)
 
       refute html =~ "figure__expert--active"
     end
 
     test "draws the router once the layer is on screen" do
-      early = render_component(&expert_grid/1, experts: 16, active: [1], step: 1)
-      later = render_component(&expert_grid/1, experts: 16, active: [1], step: 2)
+      early = render_component(&expert_grid/1, experts: 16, tokens: [[1]], step: 1)
+      later = render_component(&expert_grid/1, experts: 16, tokens: [[1]], step: 2)
 
       refute early =~ "figure__router"
       assert later =~ "figure__router"
+    end
+
+    # The point of the later presses: a different eight each token, while
+    # what earlier tokens used stays in memory.
+    test "lights the next token's experts and keeps the earlier ones faintly lit" do
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 4)
+
+      assert count(html, "figure__expert figure__expert--active") == 3
+      # 3 and 20 belong to the first token only; 9 is shared and so is lit
+      assert count(html, "figure__expert figure__expert--used") == 2
+      assert html =~ "token 2"
+      assert html =~ "5 of 128 touched so far"
     end
   end
 

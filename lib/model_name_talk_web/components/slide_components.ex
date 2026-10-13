@@ -91,7 +91,15 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
       <div class="slide__pair">
         <.dense_layer />
-        <.expert_grid experts={128} active={[6, 19, 31, 44, 68, 83, 101, 119]} step={@step} />
+        <.expert_grid
+          experts={128}
+          step={@step}
+          tokens={[
+            [6, 19, 31, 44, 68, 83, 101, 119],
+            [3, 27, 40, 57, 72, 90, 108, 125],
+            [11, 19, 35, 61, 77, 94, 113, 122]
+          ]}
+        />
       </div>
     </section>
     """

@@ -203,11 +203,14 @@ defmodule ModelNameTalk.Deck do
             id: :dense_or_sparse,
             title: "One big block, or many small ones",
             chapter: 4,
-            steps: 3,
+            steps: 5,
             notes: """
             - Left: a dense layer. One feed forward block, the MLP from last time
             - Right: the same layer as a Mixture of Experts. 128 small blocks and a router
             - For each token, in each layer, the router picks 8
+            - Next press: the second token picks a different 8. Then a third
+            ! This is why all 30B have to be in memory: you cannot know in advance which experts the next token needs
+            - Faint ones were used by earlier tokens. Expert 19 got picked twice, which happens
             - In this model all 48 layers are like this. No dense layers mixed in
             """
           },

@@ -77,18 +77,43 @@ defmodule ModelNameTalkWeb.FigureComponents do
   end
 
   attr :experts, :integer, required: true
-  attr :active, :list, required: true
+  attr :tokens, :list, required: true
   attr :step, :integer, default: 1
 
   @doc """
   One Mixture of Experts layer: a router, and a grid of small feed forward
-  blocks with the ones this token uses lit.
+  blocks with the ones the current token uses lit.
 
-  The grid is the argument. A hundred and twenty eight squares with eight of
-  them lit says "most of this model sits still for any given token" faster
-  than a sentence can, and it is the one picture the chapter needs.
+  The router appears on the second press and the first token's experts on
+  the third. Each press after that is the next token, lighting a different
+  eight, while the experts earlier tokens used stay faintly lit. That is the
+  answer to "why must all of it be in memory if only a little is used": a
+  few tokens in, the touched experts are already spread across the grid.
   """
   def expert_grid(assigns) do
+    shown = assigns.step - 2
+
+    current =
+      if shown >= 1,
+        do: Enum.at(assigns.tokens, min(shown, length(assigns.tokens)) - 1, []),
+        else: []
+
+    earlier =
+      assigns.tokens
+      |> Enum.take(max(min(shown, length(assigns.tokens)) - 1, 0))
+      |> List.flatten()
+      |> MapSet.new()
+
+    touched = earlier |> MapSet.union(MapSet.new(current)) |> MapSet.size()
+
+    assigns =
+      assign(assigns,
+        current: current,
+        earlier: earlier,
+        touched: touched,
+        token: min(max(shown, 0), length(assigns.tokens))
+      )
+
     ~H"""
     <div class="figure__moe">
       <p :if={@step >= 2} class="figure__router">router</p>
@@ -98,12 +123,16 @@ defmodule ModelNameTalkWeb.FigureComponents do
           :for={expert <- 1..@experts}
           class={[
             "figure__expert",
-            @step >= 3 and expert in @active and "figure__expert--active"
+            expert in @current && "figure__expert--active",
+            (expert not in @current and MapSet.member?(@earlier, expert)) && "figure__expert--used"
           ]}
         ></span>
       </div>
 
-      <p class="figure__moe-caption">{@experts} experts, {length(@active)} used</p>
+      <p :if={@token == 0} class="figure__moe-caption">{@experts} experts</p>
+      <p :if={@token >= 1} class="figure__moe-caption">
+        token {@token}: {length(@current)} experts &middot; {@touched} of {@experts} touched so far
+      </p>
     </div>
     """
   end

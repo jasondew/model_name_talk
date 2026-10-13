@@ -647,3 +647,8 @@
   letter-spacing: 0;
   text-transform: none;
 }
+
+/* Experts an earlier token used: still in memory, not working right now. */
+.figure__expert--used {
+  background: color-mix(in srgb, var(--deck-lit) 35%, var(--deck-line));
+}
