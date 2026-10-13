@@ -32,6 +32,18 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(question, 2) =~ "The answer: Qwen3"
   end
 
+  # It had three presses and five stages, one stage a press, so it stopped at
+  # Base and never reached the thing the chapter is named after.
+  test "the pipeline reaches Instruct on its last press" do
+    pipeline = find(:the_pipeline)
+
+    # The header always says Instruct, so look for the stage itself.
+    stage = ~s(<span class="figure__pipeline-stage">Instruct</span>)
+
+    refute draw(pipeline, 1) =~ stage
+    assert draw(pipeline, pipeline.steps) =~ stage
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

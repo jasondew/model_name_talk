@@ -129,8 +129,10 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
+      <%!-- Five stages over three presses: text to Base arrives together,
+           then post-training, then Instruct on the last press. --%>
       <.pipeline
-        step={@step}
+        step={@step + 2}
         stages={["a great deal of text", "pre-training", "Base", "post-training", "Instruct"]}
       />
     </section>
