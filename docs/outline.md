@@ -276,14 +276,18 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 - it is Gemma's word for instruct, and Chat is the older word
 ```
 
-### `base_continues` A base model continues the document
+### `base_continues` One question, four kinds of model
 
-*2 steps*
+*5 steps*
 
 ```
-! Ask a base model a question and it may answer with more questions
-! It is not being unhelpful. It is doing its job exactly
-- It has seen a lot of documents that are lists of questions
+- First press: the question. Every model on this slide started as the same base model
+! Base: it continues the document. A page of questions is a likely document, so it writes more questions
+- It is not being unhelpful. It is doing its job exactly
+- Instruct: post-training taught it that a question wants an answer
+- Thinking: it writes its reasoning between think tags first, then answers. Slower, better on hard problems
+- Embedding: no words at all. A list of numbers that places the question near others that mean the same thing
+- These replies are illustrative, written to show the shape of each. They are not captured output
 ```
 
 ### `chat_template` The model only ever sees one string

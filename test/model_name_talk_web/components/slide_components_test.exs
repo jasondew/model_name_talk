@@ -138,6 +138,26 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, slide.steps) =~ "Broken at 2"
   end
 
+  test "one question gets four kinds of answer, one a press" do
+    slide = find(:base_continues)
+
+    first = draw(slide, 1)
+    assert first =~ "How do I make a cup of tea?"
+    refute first =~ "How do I boil an egg"
+
+    assert draw(slide, 2) =~ "How do I boil an egg"
+    refute draw(slide, 2) =~ "Embedding"
+    assert draw(slide, slide.steps) =~ "Embedding"
+  end
+
+  # The round after it asks what a base model does with "What is the capital
+  # of France?". Showing that exact exchange first would give the answer away.
+  test "the examples do not give away the round that follows" do
+    slide = find(:base_continues)
+
+    refute draw(slide, slide.steps) =~ "capital of France"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

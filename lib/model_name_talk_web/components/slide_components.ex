@@ -177,6 +177,36 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  # One question and what each kind of model sends back. The replies are
+  # illustrative and the notes say so; the question differs from the round
+  # that follows so that slide does not give the round away.
+  def slide(%{slide: %Slide{id: :base_continues}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <p class="slide__prompt">How do I make a cup of tea?</p>
+
+      <.comparison
+        step={@step - 1}
+        variant="sentences"
+        lit="Instruct"
+        headers={["", "what comes back"]}
+        rows={[
+          ["Base", "How do I make a cup of coffee? How do I boil an egg? How do I"],
+          ["Instruct", "Boil water, steep a tea bag for 3 to 5 minutes, add milk if you like."],
+          [
+            "Thinking",
+            "<think>Simple steps: water, bag, time. Milk is optional.</think> Boil water, steep a tea bag for 3 to 5 minutes, add milk to taste."
+          ],
+          ["Embedding", "[0.018, -0.097, 0.231, 0.004, ...]"]
+        ]}
+      />
+    </section>
+    """
+  end
+
   ## CHAPTER 7, Q4_K_M
 
   # The formula, then the formula used: Q4_K_M, the file in the title.
