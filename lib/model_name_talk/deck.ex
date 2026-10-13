@@ -296,12 +296,11 @@ defmodule ModelNameTalk.Deck do
             id: :kinds_of_model,
             title: "What each one gives you back",
             chapter: 5,
-            steps: 4,
+            steps: 3,
             notes: """
             ! Every one of these started as the same base model
             - Base continues your text. Instruct answers you
             - Thinking writes its reasoning first, then answers. Slower, more tokens, better on hard problems
-            - Coder is post-trained on code. VL takes images as well as text
             - Embedding is the odd one: it gives you a vector, not words
             - it is Gemma's word for instruct, and Chat is the older word
             """

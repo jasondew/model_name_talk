@@ -372,7 +372,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
           ["Base", "more text, continuing yours"],
           ["Instruct, it, Chat", "an answer"],
           ["Thinking", "reasoning first, then an answer"],
-          ["Coder, VL", "code. or it reads images too"],
           ["Embedding", "a vector, not words at all"]
         ]}
       />
