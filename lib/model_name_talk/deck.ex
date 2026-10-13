@@ -403,13 +403,13 @@ defmodule ModelNameTalk.Deck do
           },
           %Slide{
             id: :why_quantize,
-            title: "61 GB, and a 12 GB card",
+            title: "61 GB, and a 12 GB GPU",
             chapter: 7,
             steps: 3,
             notes: """
             ! This is why quantization exists. Not to be clever, to make it fit
             - Qwen3-30B at the precision Qwen released it: 61 GB
-            - The card in my machine holds 12
+            - The GPU in my machine, an RTX 3060, holds 12
             - Quantization is the whole distance between those two numbers
             - It also makes it faster, which we come back to
             """
@@ -491,7 +491,7 @@ defmodule ModelNameTalk.Deck do
             - Same model, same 30.5 billion parameters, four real files
             - BF16 is what Qwen released. Everything below it is somebody else's conversion
             ! Q4_K_M is the usual deal and it is under a third the size
-            - Q2_K does fit the 12 GB card, and you would not enjoy it
+            - Q2_K does fit the 12 GB GPU, and you would not enjoy it
             - The bar is bits for each weight, the number beside it is the file on disk
             """
           },
@@ -623,7 +623,7 @@ defmodule ModelNameTalk.Deck do
             round: :does_it_fit,
             steps: 2,
             notes: """
-            - 18.6 GB of model, a 12 GB card, 16 GB of system RAM
+            - 18.6 GB of model, a 12 GB GPU, 16 GB of system RAM
             ! Offload is the answer, and it is a good answer for an MoE
             - Each token only uses 3B of the parameters, so little has to cross from system RAM
             - Mention the other options exist: smaller quant, smaller model

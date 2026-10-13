@@ -383,7 +383,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.step n={2} step={@step}>
         <p class="slide__equation">
           <span class="slide__equation-to">12 GB</span>
-          <span class="slide__equation-from">of card</span>
+          <span class="slide__equation-from">of GPU memory</span>
         </p>
       </.step>
 
