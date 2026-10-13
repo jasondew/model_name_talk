@@ -44,6 +44,20 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(pipeline, pipeline.steps) =~ stage
   end
 
+  # Both had fewer presses than pieces, so their last piece never appeared.
+  test "the kinds of model reach Embedding on the last press" do
+    slide = find(:kinds_of_model)
+
+    assert draw(slide, slide.steps) =~ "a vector, not words at all"
+  end
+
+  test "the label explains M on the last press" do
+    slide = find(:the_label)
+
+    refute draw(slide, 1) =~ "medium"
+    assert draw(slide, slide.steps) =~ "medium"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

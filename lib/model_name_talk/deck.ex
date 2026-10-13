@@ -472,7 +472,7 @@ defmodule ModelNameTalk.Deck do
             id: :the_label,
             title: "Q4, K, M",
             chapter: 7,
-            steps: 3,
+            steps: 4,
             notes: """
             - Q4: four bits for each weight
             - K: llama.cpp's k-quant, which also quantises the scales

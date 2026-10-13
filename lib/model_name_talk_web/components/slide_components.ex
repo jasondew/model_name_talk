@@ -364,8 +364,9 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
+      <%!-- Base and Instruct arrive together, then one row a press. --%>
       <.comparison
-        step={@step}
+        step={@step + 1}
         lit="Instruct"
         headers={["in the name", "what comes back"]}
         rows={[

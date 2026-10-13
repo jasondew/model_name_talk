@@ -416,7 +416,7 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ### `the_label` Q4, K, M
 
-*3 steps*
+*4 steps*
 
 ```
 - Q4: four bits for each weight
