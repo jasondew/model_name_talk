@@ -4,7 +4,9 @@ defmodule ModelNameTalk.RoundTest do
   alias ModelNameTalk.Round
 
   describe "the catalogue" do
-    test "lists seven rounds in talk order" do
+    # Round six went when the talk became slides only: it needed three real
+    # samples from the toy model that were never produced.
+    test "lists six rounds in talk order" do
       identifiers = Enum.map(Round.all(), & &1.id)
 
       assert identifiers == [
@@ -13,7 +15,6 @@ defmodule ModelNameTalk.RoundTest do
                :memory_versus_speed,
                :base_completion,
                :how_many_gigabytes,
-               :which_is_two_bit,
                :does_it_fit
              ]
     end

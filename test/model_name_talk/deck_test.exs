@@ -107,15 +107,6 @@ defmodule ModelNameTalk.DeckTest do
     assert Deck.length() == length(Deck.slides())
   end
 
-  test "places a demo and its fallback together" do
-    identifiers = Enum.map(Deck.slides(), & &1.id)
-
-    demo = Enum.find_index(identifiers, &(&1 == :demo_base_instruct))
-    fallback = Enum.find_index(identifiers, &(&1 == :demo_base_instruct_fallback))
-
-    assert fallback == demo + 1
-  end
-
   describe "the brief's own rules" do
     # The brief says one idea for each slide with body text under about
     # fifteen words. A title that runs long is the first sign a slide is

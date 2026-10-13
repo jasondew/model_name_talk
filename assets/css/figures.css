@@ -361,6 +361,7 @@
 
 .slide__formula {
   margin: 0;
+  text-wrap: balance;
   font-size: clamp(2rem, 7vw, 6rem);
   font-weight: 800;
   letter-spacing: -0.02em;

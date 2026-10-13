@@ -101,6 +101,24 @@ original was from 32K. And `decoder_sparse_step` is 1 with `mlp_only_layers`
 empty, so every one of the 48 layers is an MoE layer, with no dense layers
 interleaved. That is a cleaner story for chapter 4 than "some layers".
 
+## Where 30.5B and 3.3B come from
+
+Computed from the same config.json: hidden 2048, expert width 768, 48 layers,
+128 experts, 8 used for each token, 32 attention heads, 4 key value heads,
+head dimension 128, vocabulary 151,936, input and output embeddings untied.
+
+| Part | Parameters |
+|---|---|
+| One expert, one layer (gate, up, down: 3 x 2048 x 768) | 4.72M |
+| One expert across all 48 layers | 226M |
+| All 128 experts | 28.99B, 95% of the model |
+| Shared: attention, router, embeddings | 1.54B |
+| **Total: shared + 128 experts** | **30.53B**, matches the config |
+| **Active: shared + 8 experts** | **3.35B**, matches the model card |
+
+The common misreading is that 3B is the size of one expert. It is the whole
+of what one token uses.
+
 ## The 2507 release history
 
 The brief's account holds. Qwen3 launched 2025-04-28 with hybrid thinking, a
