@@ -62,6 +62,16 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, slide.steps) =~ "medium"
   end
 
+  # mix format turned the template into a plain HTML attribute, where a
+  # backslash n is two literal characters, so the slide printed "\n" and ran
+  # the whole conversation onto one line.
+  test "the chat template breaks onto real lines, with no literal backslash n" do
+    html = draw(find(:chat_template), 2)
+
+    refute html =~ "\\n"
+    assert html =~ "user\nWhat is the capital"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

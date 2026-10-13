@@ -146,7 +146,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
       <.raw_text
         step={@step}
-        text="<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n"
+        text={chat_template_text()}
       />
 
       <.step n={2} step={@step}>
@@ -551,6 +551,17 @@ defmodule ModelNameTalkWeb.SlideComponents do
   end
 
   ## PRIVATE FUNCTIONS
+
+  # A function rather than an inline attribute: mix format rewrites a string
+  # in braces into a plain HTML attribute, where a backslash n is two literal
+  # characters, and the slide then showed one long line with "\n" printed in it.
+  defp chat_template_text do
+    """
+    <|im_start|>user
+    What is the capital of France?<|im_end|>
+    <|im_start|>assistant\
+    """
+  end
 
   defp segment(chapter) do
     Enum.find(Filename.segments(), &(&1.chapter == chapter))
