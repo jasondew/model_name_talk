@@ -117,6 +117,19 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, 3) =~ "18.3 GB"
   end
 
+  test "the precision slide draws each format's bits, one a press" do
+    slide = find(:precision)
+
+    first = draw(slide, 1)
+    assert first =~ "FP32"
+    assert first =~ "bits__field--exponent"
+    refute first =~ "BF16"
+
+    last = draw(slide, slide.steps)
+    assert last =~ "INT4"
+    assert last =~ "0.1001"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

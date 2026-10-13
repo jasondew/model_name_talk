@@ -434,7 +434,59 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :rows, :list, required: true
+  attr :step, :integer, default: 1
+  attr :lit, :string, default: nil
+
+  @doc """
+  How each number format spends its bits, one format a press.
+
+  Each row draws the bits themselves, as wide as there are bits, split into
+  the fields that matter: the sign, the exponent that sets how big a number
+  can be, and the mantissa that sets how many digits it keeps. An integer
+  format spends every bit on the value and needs a scale from outside to mean
+  anything. Beside each, the range it can reach and what 0.1 actually turns
+  into, which is the clearest way to see what precision costs.
+  """
+  def bit_layout(assigns) do
+    ~H"""
+    <div class="bits">
+      <p class="bits__legend">
+        <span class="bits__key bits__key--sign">sign</span>
+        <span class="bits__key bits__key--exponent">exponent: how big</span>
+        <span class="bits__key bits__key--mantissa">mantissa: how many digits</span>
+      </p>
+
+      <div class="bits__head">
+        <span></span><span>the bits</span><span>range</span><span>0.1 becomes</span>
+      </div>
+
+      <div
+        :for={{{name, fields, range, example}, order} <- Enum.with_index(@rows, 1)}
+        :if={order <= @step}
+        class={["bits__row", name == @lit && "bits__row--lit"]}
+      >
+        <p class="bits__name">{name}</p>
+        <div class="bits__word">
+          <span
+            :for={{kind, count} <- fields}
+            class={"bits__field bits__field--#{kind}"}
+            style={"width: #{count / 32 * 100}%"}
+          >{field_label(kind, count)}</span>
+        </div>
+        <p class="bits__range">{range}</p>
+        <p class="bits__example">{example}</p>
+      </div>
+    </div>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
+
+  # The sign is one bit and too narrow to label; the other fields carry their
+  # bit count so the room can add them up.
+  defp field_label(:sign, _count), do: ""
+  defp field_label(_kind, count), do: "#{count}"
 
   # Weights run from minus one to one; the line runs from zero to a hundred.
   defp on_line(value), do: (value + 1) / 2 * 100

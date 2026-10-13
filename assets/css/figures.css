@@ -743,3 +743,97 @@
 .slide__working-answer {
   color: var(--deck-lit);
 }
+
+/*
+ * Number formats, drawn as their bits. A row is as wide as the format has
+ * bits, out of 32, so the cost is visible before anybody reads a number.
+ * Field colour carries meaning only alongside the legend and the bit counts
+ * printed in each field.
+ */
+
+.bits {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25vh;
+}
+
+.bits__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 0.5vh;
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 700;
+}
+
+.bits__key::before {
+  content: "";
+  display: inline-block;
+  width: 0.875em;
+  height: 0.875em;
+  margin-right: 0.4em;
+  border-radius: 2px;
+  vertical-align: -0.1em;
+}
+
+.bits__key--sign::before { background: var(--deck-dim); }
+.bits__key--exponent::before { background: var(--deck-lit); }
+.bits__key--mantissa::before { background: #60a5fa; }
+
+.bits__head,
+.bits__row {
+  display: grid;
+  grid-template-columns: 6ch 3fr 1.3fr 1.6fr;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.bits__head {
+  color: var(--deck-dim);
+  font-size: clamp(0.6875rem, 1.2vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bits__name,
+.bits__range,
+.bits__example {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.7vw, 1.4375rem);
+  font-weight: 700;
+}
+
+.bits__name {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 800;
+}
+
+.bits__example {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.bits__row--lit .bits__name {
+  color: var(--deck-lit);
+}
+
+.bits__word {
+  display: flex;
+  gap: 2px;
+  height: clamp(1.5rem, 3.6vh, 2.5rem);
+}
+
+.bits__field {
+  display: grid;
+  place-items: center;
+  border-radius: 2px;
+  color: #0c0a09;
+  font-size: clamp(0.6875rem, 1.2vw, 1rem);
+  font-weight: 800;
+}
+
+.bits__field--sign { background: var(--deck-dim); }
+.bits__field--exponent { background: var(--deck-lit); }
+.bits__field--mantissa { background: #60a5fa; }
+.bits__field--integer { background: #60a5fa; }

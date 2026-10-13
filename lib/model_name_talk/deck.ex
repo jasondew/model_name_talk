@@ -421,13 +421,17 @@ defmodule ModelNameTalk.Deck do
             id: :precision,
             title: "Bits for each weight",
             chapter: 7,
-            steps: 2,
+            steps: 5,
             notes: """
-            - FP32 is four bytes, BF16 two, INT8 one, four bit is half a byte
+            - Each bar is the bits themselves, as wide as the format has bits
+            - A float spends its bits three ways: a sign, an exponent for how big, a mantissa for how many digits
+            - FP32: 8 bits of exponent, 23 of mantissa. Huge range, about 7 digits. 0.1 comes back as 0.10000000149
+            - FP16: half the bits, but it takes them out of both. Only reaches 65,504, about 3 digits
+            ! BF16 keeps FP32's exponent and throws away mantissa. Same range, only 2 or 3 digits
+            - That is the right trade for weights: range matters, the third digit barely does. It is what Qwen ships
             ! Vendors release at 16 bits. That is why it is 61 GB and not 122
-            - At FP32 this model would be 30.5B times 4 bytes, 122 GB. Nobody ships that
-            - BF16 halves it with essentially no loss, so the release is already the first halving
-            - Everything in this chapter is about spending fewer bits on each number
+            - INT8 and INT4 are not floats at all: just a whole number. On their own they cannot say 0.1
+            - They need a scale from outside to mean anything, and that is the next few slides
             """
           },
           %Slide{

@@ -30,6 +30,18 @@ makes its comparison approximately 2.0 million times rather than 2.3 million.
 **Round 5's answer is 75 GB, not 74.** The real file is 74.98 GB. The band
 covers the whole reasonable spread either way; only the stated answer moved.
 
+## Number formats
+
+Computed with Python's struct module, rounding to nearest even for BF16.
+
+| Format | Sign, exponent, mantissa | Largest value | Decimal digits | 0.1 becomes |
+|---|---|---|---|---|
+| FP32 | 1, 8, 23 | 3.40 x 10^38 | 7.2 | 0.10000000149011612 |
+| FP16 | 1, 5, 10 | 65,504 | 3.3 | 0.0999755859375 |
+| BF16 | 1, 8, 7 | 3.39 x 10^38 | 2.4 | 0.10009765625 |
+| INT8 | whole number | -128 to 127 | | needs a scale |
+| INT4 | whole number | -8 to 7 | | needs a scale |
+
 ## Quantization, from the llama.cpp source
 
 Source: `ggml/src/ggml-common.h` at

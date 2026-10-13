@@ -479,21 +479,23 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## TABLES THE ROOM SHOULD SEE
 
+  # What each number format is, bit by bit. The ranges and the values 0.1
+  # turns into were computed, not looked up; see docs/verify.md.
   def slide(%{slide: %Slide{id: :precision}} = assigns) do
     ~H"""
     <section class="slide">
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <.comparison
-        step={@step * 2}
+      <.bit_layout
+        step={@step}
         lit="BF16"
-        headers={["format", "bits", "bytes for each weight"]}
         rows={[
-          ["FP32", "32", "4"],
-          ["BF16", "16", "2"],
-          ["INT8", "8", "1"],
-          ["4-bit", "4", "0.5"]
+          {"FP32", [sign: 1, exponent: 8, mantissa: 23], "±3.4 × 10³⁸", "0.10000000149"},
+          {"FP16", [sign: 1, exponent: 5, mantissa: 10], "±65,504", "0.09998"},
+          {"BF16", [sign: 1, exponent: 8, mantissa: 7], "±3.4 × 10³⁸", "0.1001"},
+          {"INT8", [integer: 8], "−128 to 127", "a whole number, and a scale"},
+          {"INT4", [integer: 4], "−8 to 7", "a whole number, and a scale"}
         ]}
       />
     </section>

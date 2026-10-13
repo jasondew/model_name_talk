@@ -183,12 +183,15 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ### `dense_or_sparse` One big block, or many small ones
 
-*3 steps*
+*5 steps*
 
 ```
 - Left: a dense layer. One feed forward block, the MLP from last time
 - Right: the same layer as a Mixture of Experts. 128 small blocks and a router
 - For each token, in each layer, the router picks 8
+- Next press: the second token picks a different 8. Then a third
+! This is why all 30B have to be in memory: you cannot know in advance which experts the next token needs
+- Faint ones were used by earlier tokens. Expert 19 got picked twice, which happens
 - In this model all 48 layers are like this. No dense layers mixed in
 ```
 
@@ -203,16 +206,15 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ### `memory_and_speed` Total sets memory. Active sets speed.
 
-*2 steps*
+*4 steps*
 
 ```
+- First press: the shared part. Attention, embeddings, the router. Every token uses all of it
+- Second press: the experts. 128 of them stored, only 8 used for any one token
+- Third press: add it up. 30.5B stored, 3.3B used. That 3.3B is the A3B in the name
+! 3B is not one expert. It is 8 small experts plus the shared part every token uses
 ! Every expert has to be in memory, because the next token may want a different one
-! But each token only uses about 3B of those 30B parameters
-! 3B is not one expert. It is 8 small experts plus the attention and embeddings every token uses
-- Each expert is about 226M across all 48 layers. All 128 of them are 29B, 95% of the model
-- Total is 1.5B shared plus 128 experts. Active is the same 1.5B plus 8
-- So it costs a 30B model to hold and runs near the speed of a 3B one
-- Attention is not split. Every token uses all of it
+- Fourth press: total sets memory, active sets speed. That is the whole chapter
 - If a name has no A segment, assume dense
 ```
 
@@ -358,35 +360,43 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ### `why_quantize` 61 GB, and a 12 GB GPU
 
-*3 steps*
+*4 steps*
 
 ```
 ! This is why quantization exists. Not to be clever, to make it fit
-- Qwen3-30B at the precision Qwen released it, BF16, 2 bytes each: 61 GB
-- The GPU in my machine, an RTX 3060, holds 12
-- Quantization is the whole distance between those two numbers
-- It also makes it faster, which we come back to
+- First press: the model as Qwen released it, BF16, 2 bytes each: 61 GB. The line is my GPU, an RTX 3060, 12 GB
+- Then the same model saved smaller: Q8_0, then Q4_K_M, the usual choice
+- Last press: Q2_K, 11.3 GB, finally inside the line
+- It fits only just. The context needs memory too, and 2 bits is a big quality hit. More on both shortly
+- Every bar is a real file on Hugging Face
 ```
 
 ### `precision` Bits for each weight
 
-*2 steps*
+*5 steps*
 
 ```
-- FP32 is four bytes, BF16 two, INT8 one, four bit is half a byte
+- Each bar is the bits themselves, as wide as the format has bits
+- A float spends its bits three ways: a sign, an exponent for how big, a mantissa for how many digits
+- FP32: 8 bits of exponent, 23 of mantissa. Huge range, about 7 digits. 0.1 comes back as 0.10000000149
+- FP16: half the bits, but it takes them out of both. Only reaches 65,504, about 3 digits
+! BF16 keeps FP32's exponent and throws away mantissa. Same range, only 2 or 3 digits
+- That is the right trade for weights: range matters, the third digit barely does. It is what Qwen ships
 ! Vendors release at 16 bits. That is why it is 61 GB and not 122
-- At FP32 this model would be 30.5B times 4 bytes, 122 GB. Nobody ships that
-- BF16 halves it with essentially no loss, so the release is already the first halving
-- Everything in this chapter is about spending fewer bits on each number
+- INT8 and INT4 are not floats at all: just a whole number. On their own they cannot say 0.1
+- They need a scale from outside to mean anything, and that is the next few slides
 ```
 
 ### `the_formula` parameters x bits
 
+*3 steps*
+
 ```
 ! If they remember one thing from this talk, this is it
-- Parameters in billions times bits for each, divided by 8, gives gigabytes
-- 30.5B at 16 bits is 488 billion bits, over 8 is 61 GB. That is the release
 - Say it once, slowly, and let it sit
+- Second press: use it on the file in the title. 30.5 billion parameters, Q4_K_M is about 4.8 bits each
+- Third press: 146.6 billion bits, divide by 8 for bytes, 18.3 GB
+- The real file is 18.56 GB. We come back to how close that is
 ```
 
 ### `the_method` A scale, and sixteen levels
