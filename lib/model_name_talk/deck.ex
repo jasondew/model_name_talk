@@ -193,7 +193,9 @@ defmodule ModelNameTalk.Deck do
             title: "A3B",
             chapter: 4,
             notes: """
-            - A is for active, and this is the most useful segment in the name
+            ! A3B means 3 billion active parameters: the ones each token actually uses
+            - Same unit as the 30B. 30B is how many it has, 3B is how many one token uses
+            - This is the most useful segment in the name
             - It tells you the model is a Mixture of Experts without using the words
             """
           },
@@ -227,7 +229,7 @@ defmodule ModelNameTalk.Deck do
             steps: 2,
             notes: """
             ! Every expert has to be in memory, because the next token may want a different one
-            ! But only about 3B of arithmetic happens for each token
+            ! But each token only uses about 3B of those 30B parameters
             ! 3B is not one expert. It is 8 small experts plus the attention and embeddings every token uses
             - Each expert is about 226M across all 48 layers. All 128 of them are 29B, 95% of the model
             - Total is 1.5B shared plus 128 experts. Active is the same 1.5B plus 8
@@ -634,7 +636,7 @@ defmodule ModelNameTalk.Deck do
             notes: """
             - 18.6 GB of model, a 12 GB card, 16 GB of system RAM
             ! Offload is the answer, and it is a good answer for an MoE
-            - Only 3B is active for each token, so the traffic over PCIe is small
+            - Each token only uses 3B of the parameters, so little has to cross from system RAM
             - Mention the other options exist: smaller quant, smaller model
             """
           }
