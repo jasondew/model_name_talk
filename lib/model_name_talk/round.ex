@@ -126,26 +126,15 @@ defmodule ModelNameTalk.Round do
         speed_bonus: false
       },
       %__MODULE__{
-        id: :which_is_two_bit,
-        after_segment: "Q4_K_M",
-        question:
-          "Three samples from the toy model, quantised to 8, 4 and 2 bits. Which one is 2 bit?",
-        hint: "below three bits it falls apart quickly",
-        type: :choice,
-        options: ["A", "B", "C"],
-        answer: "C",
-        seconds: 20
-      },
-      %__MODULE__{
         id: :does_it_fit,
         after_segment: ".gguf",
-        question: "18.6 GB of model, a 12 GB card and 16 GB of system RAM. What do you do?",
+        question: "18.6 GB of model, a GPU with 12 GB and 16 GB of system RAM. What do you do?",
         hint: "more than one of these works",
         type: :choice,
         options: [
           "Nothing. It cannot run.",
           "Offload part of it to system RAM",
-          "Buy a second card",
+          "Buy a second GPU",
           "Run it at BF16 instead"
         ],
         answer: "Offload part of it to system RAM",

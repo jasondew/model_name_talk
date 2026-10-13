@@ -12,31 +12,73 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
 
   defp find(id), do: Enum.find(Deck.slides(), &(&1.id == id))
 
-  test "draws a slide that has no clause of its own as a stub" do
+  # In front of a room an undrawn slide is its title. Its notes are for the
+  # speaker and stay on the presenter view.
+  test "draws a slide with no clause of its own as its title, without its notes" do
     unwritten = %Slide{id: :not_a_real_slide, title: "Unwritten", notes: "- a cue\n"}
 
     html = draw(unwritten)
 
-    assert html =~ "slide--stub"
     assert html =~ "Unwritten"
-    assert html =~ "a cue"
+    refute html =~ "a cue"
+    refute html =~ "slide--stub"
   end
 
-  # The stub used to render Slide.prose/1, which joins every note with a space
-  # and runs the sentences into each other with no punctuation between them.
-  test "a stub puts each note on its own line rather than running them together" do
-    unwritten = %Slide{
-      id: :not_a_real_slide,
-      title: "Unwritten",
-      notes: "- the first note\n- the second note\n= term: a meaning\n"
-    }
+  test "a question slide holds its answer back until the second press" do
+    question = find(:round_open_weights)
 
-    html = draw(unwritten)
+    refute draw(question, 1) =~ "slide__option--answer"
+    assert draw(question, 2) =~ "slide__option--answer"
+    assert draw(question, 2) =~ "The answer: Qwen3"
+  end
 
-    assert html =~ "the first note"
-    assert html =~ "the second note"
-    assert html =~ "term: a meaning"
-    refute html =~ "the first note the second note"
+  # It had three presses and five stages, one stage a press, so it stopped at
+  # Base and never reached the thing the chapter is named after.
+  test "the pipeline reaches Instruct on its last press" do
+    pipeline = find(:the_pipeline)
+
+    # The header always says Instruct, so look for the stage itself.
+    stage = ~s(<span class="figure__pipeline-stage">Instruct</span>)
+
+    first = draw(pipeline, 1)
+
+    assert first =~ ~s(<span class="figure__pipeline-stage">a great deal of text</span>)
+    refute first =~ ~s(<span class="figure__pipeline-stage">pre-training</span>)
+    refute first =~ stage
+    assert draw(pipeline, pipeline.steps) =~ stage
+  end
+
+  # Both had fewer presses than pieces, so their last piece never appeared.
+  test "the kinds of model reach Embedding on the last press" do
+    slide = find(:kinds_of_model)
+
+    assert draw(slide, slide.steps) =~ "a vector, not words at all"
+  end
+
+  test "the label explains M on the last press" do
+    slide = find(:the_label)
+
+    refute draw(slide, 1) =~ "medium"
+    assert draw(slide, slide.steps) =~ "medium"
+  end
+
+  # mix format turned the template into a plain HTML attribute, where a
+  # backslash n is two literal characters, so the slide printed "\n" and ran
+  # the whole conversation onto one line.
+  test "the chat template breaks onto real lines, with no literal backslash n" do
+    html = draw(find(:chat_template), 2)
+
+    refute html =~ "\\n"
+    assert html =~ "user\nWhat is the capital"
+  end
+
+  test "the chat template sends the question, then shows the reply, then lights the tokens" do
+    slide = find(:chat_template)
+
+    refute draw(slide, 1) =~ "Paris"
+    assert draw(slide, 2) =~ "The capital of France is Paris."
+    refute draw(slide, 2) =~ "raw__special"
+    assert draw(slide, 3) =~ "raw__special"
   end
 
   test "draws every slide in the deck, at every step, without raising" do
@@ -120,10 +162,6 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     end
 
     assert html =~ "annotated__label"
-  end
-
-  test "the close shows the leaderboard" do
-    assert draw(find(:the_board)) =~ "deck__standings"
   end
 
   test "the magnitude figure marks each model and labels its value" do

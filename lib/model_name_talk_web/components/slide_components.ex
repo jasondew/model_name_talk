@@ -15,11 +15,10 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   use Phoenix.Component
 
-  import ModelNameTalkWeb.DeckComponents, only: [standings: 1]
   import ModelNameTalkWeb.FigureComponents
   import ModelNameTalkWeb.FilenameComponents
 
-  alias ModelNameTalk.{Filename, Room, Round, Slide}
+  alias ModelNameTalk.{Filename, Round, Slide}
 
   attr :n, :integer, required: true
   attr :step, :integer, required: true
@@ -130,6 +129,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
+      <%!-- One stage a press, starting from the text alone. --%>
       <.pipeline
         step={@step}
         stages={["a great deal of text", "pre-training", "Base", "post-training", "Instruct"]}
@@ -144,49 +144,13 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <.raw_text
-        step={@step}
-        text="<|im_start|>user\nWhat is the capital of France?<|im_end|>\n<|im_start|>assistant\n"
-      />
+      <%!-- What you send, then what the model writes back, then the special
+           tokens light up. --%>
+      <.raw_text step={if @step >= 3, do: 2, else: 1} text={chat_template_text(@step)} />
 
-      <.step n={2} step={@step}>
+      <.step n={3} step={@step}>
         <p class="slide__caption">The lit parts are just tokens. The model cannot see a message.</p>
       </.step>
-    </section>
-    """
-  end
-
-  def slide(%{slide: %Slide{id: :demo_base_instruct}} = assigns) do
-    ~H"""
-    <section class="slide slide--centred">
-      <.filename chapter={@slide.chapter} />
-      <p class="slide__demo">DEMO</p>
-      <p class="slide__caption">One prompt. Qwen3-4B-Base, then Qwen3-4B-Instruct-2507.</p>
-    </section>
-    """
-  end
-
-  # A missing screenshot draws a bordered note saying what belongs there,
-  # rather than a broken image on a projector. The fallback for the demo must
-  # not itself need a fallback.
-  def slide(%{slide: %Slide{id: :demo_base_instruct_fallback}} = assigns) do
-    assigns = assign(assigns, shot: screenshot("demo-base-instruct.png"))
-
-    ~H"""
-    <section class="slide">
-      <.filename chapter={@slide.chapter} />
-      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-
-      <img
-        :if={@shot}
-        src={@shot}
-        alt="The same prompt sent to a base model and an instruct model"
-        class="slide__shot"
-      />
-
-      <p :if={is_nil(@shot)} class="slide__missing">
-        Rehearsal screenshot goes here: priv/static/images/demo-base-instruct.png
-      </p>
     </section>
     """
   end
@@ -197,8 +161,8 @@ defmodule ModelNameTalkWeb.SlideComponents do
     ~H"""
     <section class="slide slide--centred">
       <.filename chapter={@slide.chapter} />
-      <p class="slide__formula">parameters &times; bits &divide; 8</p>
-      <p class="slide__caption">billions in, gigabytes out</p>
+      <p class="slide__formula">parameters &times; bits to store each parameter</p>
+      <p class="slide__caption">That is bits. Divide by 8 for bytes.</p>
     </section>
     """
   end
@@ -322,17 +286,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
-  def slide(%{slide: %Slide{id: :the_board}} = assigns) do
-    ~H"""
-    <section class="slide">
-      <.filename chapter={@slide.chapter} />
-      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-
-      <.standings standings={Room.standings()} limit={5} />
-    </section>
-    """
-  end
-
   ## CHAPTER 2, Qwen3
 
   # Two words, arriving. The explanation is worth more said than read, so it
@@ -399,15 +352,15 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
+      <%!-- Base and Instruct arrive together, then one row a press. --%>
       <.comparison
-        step={@step}
+        step={@step + 1}
         lit="Instruct"
         headers={["in the name", "what comes back"]}
         rows={[
           ["Base", "more text, continuing yours"],
           ["Instruct, it, Chat", "an answer"],
           ["Thinking", "reasoning first, then an answer"],
-          ["Coder, VL", "code. or it reads images too"],
           ["Embedding", "a vector, not words at all"]
         ]}
       />
@@ -430,7 +383,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.step n={2} step={@step}>
         <p class="slide__equation">
           <span class="slide__equation-to">12 GB</span>
-          <span class="slide__equation-from">of card</span>
+          <span class="slide__equation-from">of GPU memory</span>
         </p>
       </.step>
 
@@ -460,6 +413,49 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.step n={5} step={@step}>
         <p class="slide__caption">One model. Same 30.5 billion parameters every time.</p>
       </.step>
+    </section>
+    """
+  end
+
+  ## TABLES THE ROOM SHOULD SEE
+
+  def slide(%{slide: %Slide{id: :precision}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step * 2}
+        lit="BF16"
+        headers={["format", "bits", "bytes for each weight"]}
+        rows={[
+          ["FP32", "32", "4"],
+          ["BF16", "16", "2"],
+          ["INT8", "8", "1"],
+          ["4-bit", "4", "0.5"]
+        ]}
+      />
+    </section>
+    """
+  end
+
+  def slide(%{slide: %Slide{id: :which_program}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={3}
+        lit="GGUF"
+        headers={["format", "read by"]}
+        rows={[
+          ["GGUF", "llama.cpp, Ollama, LM Studio"],
+          ["safetensors", "Hugging Face Transformers, vLLM"],
+          ["MLX", "MLX on Apple silicon"]
+        ]}
+      />
     </section>
     """
   end
@@ -510,6 +506,8 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## ROUNDS
 
+  # A question asked out loud. The room answers by voice or in the chat, and
+  # the second press shows the answer.
   def slide(%{slide: %Slide{round: round}} = assigns) when not is_nil(round) do
     assigns = assign(assigns, round: Round.fetch(round))
 
@@ -524,62 +522,60 @@ defmodule ModelNameTalkWeb.SlideComponents do
           :for={option <- @round.options}
           class={[
             "slide__option",
-            @room.phase == :revealed and option == @round.answer and "slide__option--answer"
+            @step >= 2 and option == @round.answer and "slide__option--answer"
           ]}
         >
           {option}
         </li>
       </ul>
 
-      <p :if={@round.type == :numeric} class="slide__numeric">
-        Type a number on your phone.
-      </p>
-
-      <p :if={@room.phase != :revealed} class="slide__count">
-        {Room.answered_count(@room)} answered
-      </p>
-
-      <div :if={@room.phase == :revealed} class="deck__tally slide__tally">
-        <p :for={{option, count} <- Room.tally(@room)} class="slide__tally-row">
-          <span class="slide__tally-option">{option}</span>
-          <span class="slide__tally-count">{count}</span>
-        </p>
-        <p class="slide__answer">{answer_line(@round)}</p>
-      </div>
+      <p :if={@step >= 2} class="slide__answer">{answer_line(@round)}</p>
     </section>
     """
   end
 
-  ## ANYTHING NOT YET WRITTEN
+  ## EVERYTHING ELSE
 
-  # Hatched, so an unwritten slide announces itself from the back of the room
-  # rather than crashing or, worse, looking finished.
+  # A slide with no drawing of its own is its title, under the header, and
+  # the speaker says the rest. It used to render hatched with its notes on
+  # screen, which was useful while the deck was being written and is wrong in
+  # front of a room.
   def slide(assigns) do
-    assigns = assign(assigns, blocks: Slide.blocks(assigns.slide))
-
     ~H"""
-    <section class="slide slide--stub">
+    <section class="slide slide--centred">
       <.filename :if={@slide.chapter} chapter={@slide.chapter} />
-      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
-
-      <ul class="slide__stub-notes">
-        <%= for block <- @blocks, line <- stub_lines(block) do %>
-          <li class="slide__stub-note">{line}</li>
-        <% end %>
-      </ul>
+      <h2 class="slide__title">{@slide.title}</h2>
     </section>
     """
   end
 
   ## PRIVATE FUNCTIONS
 
-  # Definitions read as "term: meaning" on a stub; cues and musts are already
-  # whole lines.
-  defp stub_lines({:definitions, pairs}) do
-    Enum.map(pairs, fn {term, meaning} -> "#{term}: #{meaning}" end)
+  # A function rather than an inline attribute: mix format rewrites a string
+  # in braces into a plain HTML attribute, where a backslash n is two literal
+  # characters, and the slide then showed one long line with "\n" printed in it.
+  # Verbatim from the chat template in Qwen3-30B-A3B-Instruct-2507's
+  # tokenizer_config.json: a line break after the role and after each
+  # <|im_end|>, no default system message, no think tags. The reply itself is
+  # illustrative. Kept in a function because mix format rewrites a braced
+  # string into a plain HTML attribute, where a backslash n stops being a
+  # line break.
+  defp chat_template_text(step) when step < 2 do
+    """
+    <|im_start|>user
+    What is the capital of France?<|im_end|>
+    <|im_start|>assistant\
+    """
   end
 
-  defp stub_lines({_kind, lines}), do: lines
+  defp chat_template_text(_step) do
+    """
+    <|im_start|>user
+    What is the capital of France?<|im_end|>
+    <|im_start|>assistant
+    The capital of France is Paris.<|im_end|>\
+    """
+  end
 
   defp segment(chapter) do
     Enum.find(Filename.segments(), &(&1.chapter == chapter))
@@ -598,14 +594,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
       "} block_q8_0;"
     ]
     |> Enum.join("\n")
-  end
-
-  # Nil when the file is not there, so the slide can say what is missing
-  # instead of drawing a broken image in front of a room.
-  defp screenshot(name) do
-    path = Path.join([:code.priv_dir(:model_name_talk), "static", "images", name])
-
-    if File.exists?(path), do: "/images/#{name}", else: nil
   end
 
   defp answer_line(%Round{type: :choice, answer: answer}), do: "The answer: #{answer}"
