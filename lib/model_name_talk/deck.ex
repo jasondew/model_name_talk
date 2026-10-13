@@ -228,6 +228,9 @@ defmodule ModelNameTalk.Deck do
             notes: """
             ! Every expert has to be in memory, because the next token may want a different one
             ! But only about 3B of arithmetic happens for each token
+            ! 3B is not one expert. It is 8 small experts plus the attention and embeddings every token uses
+            - Each expert is about 226M across all 48 layers. All 128 of them are 29B, 95% of the model
+            - Total is 1.5B shared plus 128 experts. Active is the same 1.5B plus 8
             - So it costs a 30B model to hold and runs near the speed of a 3B one
             - Attention is not split. Every token uses all of it
             - If a name has no A segment, assume dense
