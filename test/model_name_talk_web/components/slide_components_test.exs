@@ -101,6 +101,14 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, slide.steps) =~ "slide__equation"
   end
 
+  test "the model only fits the GPU on the last press" do
+    slide = find(:why_quantize)
+
+    refute draw(slide, 1) =~ "fits</span>"
+    refute draw(slide, 3) =~ "fits</span>"
+    assert draw(slide, slide.steps) =~ "fits</span>"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

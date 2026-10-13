@@ -384,6 +384,56 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :rows, :list, required: true
+  attr :limit, :float, required: true
+  attr :limit_label, :string, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  File sizes against a fixed memory limit, one row a press.
+
+  The line is the GPU and it never moves; the bars are the same model saved
+  smaller and smaller. A bar past the line is drawn dim, a bar inside it is
+  lit and says so in words, so whether it fits never depends on colour alone.
+  """
+  def fit_chart(assigns) do
+    largest = assigns.rows |> Enum.map(&elem(&1, 1)) |> Enum.max()
+    assigns = assign(assigns, largest: largest)
+
+    ~H"""
+    <figure class="figure fit">
+      <div class="fit__row fit__row--header">
+        <span></span>
+        <div class="fit__track">
+          <span class="fit__limit-label" style={"left: #{@limit / @largest * 100}%"}>
+            {@limit_label}
+          </span>
+        </div>
+        <span></span>
+      </div>
+
+      <div
+        :for={{{label, gigabytes}, order} <- Enum.with_index(@rows, 1)}
+        :if={order <= @step}
+        class="fit__row"
+      >
+        <p class="fit__label">{label}</p>
+        <div class="fit__track">
+          <div
+            class={["fit__bar", gigabytes <= @limit && "fit__bar--fits"]}
+            style={"width: #{gigabytes / @largest * 100}%"}
+          >
+          </div>
+          <span class="fit__limit" style={"left: #{@limit / @largest * 100}%"}></span>
+        </div>
+        <p class="fit__size">
+          {gigabytes} GB<span :if={gigabytes <= @limit} class="fit__verdict"> fits</span>
+        </p>
+      </div>
+    </figure>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
 
   # Weights run from minus one to one; the line runs from zero to a hundred.

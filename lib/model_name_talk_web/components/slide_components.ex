@@ -421,24 +421,22 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## CHAPTER 7, what the labels cost
 
+  # The same model saved smaller and smaller against a GPU that does not
+  # move. Every size is a real file from docs/verify.md.
   def slide(%{slide: %Slide{id: :why_quantize}} = assigns) do
     ~H"""
-    <section class="slide slide--centred">
+    <section class="slide">
       <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <p class="slide__equation">
-        <span class="slide__equation-to">61 GB</span>
-        <span class="slide__equation-from">of model</span>
-      </p>
+      <.fit_chart
+        step={@step}
+        limit={12.0}
+        limit_label="the GPU: 12 GB"
+        rows={[{"BF16", 61.1}, {"Q8_0", 32.48}, {"Q4_K_M", 18.56}, {"Q2_K", 11.26}]}
+      />
 
-      <.step n={2} step={@step}>
-        <p class="slide__equation">
-          <span class="slide__equation-to">12 GB</span>
-          <span class="slide__equation-from">of GPU memory</span>
-        </p>
-      </.step>
-
-      <.step n={3} step={@step}>
+      <.step n={4} step={@step}>
         <p class="slide__caption">Quantization is that gap, and nothing else.</p>
       </.step>
     </section>

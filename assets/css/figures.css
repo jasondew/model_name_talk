@@ -652,3 +652,80 @@
 .figure__expert--used {
   background: color-mix(in srgb, var(--deck-lit) 35%, var(--deck-line));
 }
+
+/*
+ * Sizes against a fixed limit. The GPU line never moves and the model is
+ * saved smaller each press. Past the line is dim, inside it is lit and says
+ * "fits" in words, so the verdict never rests on colour alone.
+ */
+
+.fit {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75vh;
+}
+
+.fit__limit {
+  position: absolute;
+  top: -0.875vh;
+  bottom: -0.875vh;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--deck-ink);
+}
+
+.fit__limit-label {
+  position: absolute;
+  bottom: 0.25rem;
+  transform: translateX(-50%);
+  color: var(--deck-ink);
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.fit__row--header .fit__track {
+  height: 1.75rem;
+}
+
+.fit__row {
+  display: grid;
+  grid-template-columns: 9ch 1fr 13ch;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fit__label {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.9375rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+}
+
+.fit__track {
+  position: relative;
+  height: clamp(1.75rem, 4vh, 3rem);
+}
+
+.fit__bar {
+  height: 100%;
+  border-radius: 0.25rem;
+  background: var(--deck-line);
+}
+
+.fit__bar--fits {
+  background: var(--deck-lit);
+}
+
+.fit__size {
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(0.9375rem, 1.7vw, 1.4375rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.fit__verdict {
+  color: var(--deck-lit);
+}

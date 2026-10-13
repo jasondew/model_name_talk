@@ -407,13 +407,14 @@ defmodule ModelNameTalk.Deck do
             id: :why_quantize,
             title: "61 GB, and a 12 GB GPU",
             chapter: 7,
-            steps: 3,
+            steps: 4,
             notes: """
             ! This is why quantization exists. Not to be clever, to make it fit
-            - Qwen3-30B at the precision Qwen released it, BF16, 2 bytes each: 61 GB
-            - The GPU in my machine, an RTX 3060, holds 12
-            - Quantization is the whole distance between those two numbers
-            - It also makes it faster, which we come back to
+            - First press: the model as Qwen released it, BF16, 2 bytes each: 61 GB. The line is my GPU, an RTX 3060, 12 GB
+            - Then the same model saved smaller: Q8_0, then Q4_K_M, the usual choice
+            - Last press: Q2_K, 11.3 GB, finally inside the line
+            - It fits only just. The context needs memory too, and 2 bits is a big quality hit. More on both shortly
+            - Every bar is a real file on Hugging Face
             """
           },
           %Slide{
