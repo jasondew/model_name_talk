@@ -454,10 +454,14 @@ defmodule ModelNameTalk.Deck do
             id: :why_blocks,
             title: "One huge weight would ruin a whole tensor",
             chapter: 7,
+            steps: 2,
             notes: """
-            ! Small blocks keep the damage local
-            - One outlier in a block of 32 spoils 32 numbers, not 30 billion
-            - This is the entire reason blocks exist
+            ! The scale has to fit the biggest weight in its group
+            - Four bits is 16 levels. The scale stretches them from the most negative weight to the most positive
+            - First press: one scale for everything. One 12.0 stretches the levels so wide that every ordinary weight rounds to 0
+            - Second press: give them their own block and they keep their values
+            ! An outlier in a block of 32 spoils 32 numbers, not 30 billion. That is the whole reason blocks exist
+            - The numbers are illustrative: symmetric 4 bit, scale is the largest value over 7
             """
           },
           %Slide{
@@ -504,11 +508,11 @@ defmodule ModelNameTalk.Deck do
             chapter: 7,
             steps: 3,
             notes: """
-            ! Within about one percent, every time
-            - These are real file sizes from Hugging Face, checked this week
-            ! The gap is not overhead to apologise for. It is the wrong constant
-            - Put 4.8 in for Q4_K_M rather than 4, and the formula is right
-            - That is a better thing to remember than a rule with an excuse attached
+            ! Run the formula, check it against the real file on Hugging Face. Within about 1% every time
+            - Read the bits column first, then the formula, then the real file
+            - 16 and 8.5 are known in advance: one is the format, the other is the llama.cpp struct
+            ! For Q4_K_M, assume about 4.8 bits, not 4. It mixes formats, so that number comes from measuring real files
+            - The file is always a little bigger: it also holds metadata, the tokenizer and the chat template
             """
           },
           %Slide{

@@ -81,6 +81,16 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, 3) =~ "raw__special"
   end
 
+  test "the blocks slide shows the outlier wiping out a shared scale, then a block saving it" do
+    slide = find(:why_blocks)
+
+    first = draw(slide, 1)
+    assert first =~ "one scale for everything"
+    refute first =~ "its own block of 32"
+
+    assert draw(slide, slide.steps) =~ "its own block of 32"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

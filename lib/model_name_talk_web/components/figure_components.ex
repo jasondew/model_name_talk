@@ -222,14 +222,14 @@ defmodule ModelNameTalkWeb.FigureComponents do
   attr :step, :integer, default: 1
 
   @doc """
-  Real file sizes against what the formula predicts.
+  Real file sizes against what the formula predicts, with the bits that went
+  into it.
 
-  This is the chapter's argument. The brief framed the distance between a
-  predicted fifteen gigabytes and a real eighteen and a half as overhead to
-  explain away. It is not overhead: it is the wrong constant. Put the right
-  bits for each weight in and the formula lands within about one percent,
-  every time, which is a better thing to remember than a rule with an excuse
-  attached.
+  The bits column is the point: without it the room cannot see where the
+  predicted size came from. BF16's 16 and Q8_0's 8.5 are known in advance,
+  from the format and from the llama.cpp struct, so those rows are genuine
+  predictions. Q4_K_M mixes formats, so its 4.8 is measured from real files
+  rather than derived, and the slide says "about".
   """
   def accuracy_table(assigns) do
     ~H"""
@@ -237,20 +237,22 @@ defmodule ModelNameTalkWeb.FigureComponents do
       <thead>
         <tr>
           <th class="accuracy__head"></th>
-          <th class="accuracy__head">real file</th>
+          <th class="accuracy__head">bits for each weight</th>
           <th class="accuracy__head">the formula</th>
-          <th class="accuracy__head">out by</th>
+          <th class="accuracy__head">real file</th>
+          <th class="accuracy__head">formula is off by</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          :for={{{label, real, predicted}, order} <- Enum.with_index(@rows, 1)}
+          :for={{{label, bits, real, predicted}, order} <- Enum.with_index(@rows, 1)}
           :if={order <= @step}
           class="accuracy__row"
         >
           <td class="accuracy__label">{label}</td>
-          <td class="accuracy__real">{real} GB</td>
+          <td class="accuracy__bits">{bits}</td>
           <td class="accuracy__predicted">{predicted} GB</td>
+          <td class="accuracy__real">{real} GB</td>
           <td class="accuracy__error">{error(real, predicted)}</td>
         </tr>
       </tbody>
@@ -287,6 +289,7 @@ defmodule ModelNameTalkWeb.FigureComponents do
   attr :rows, :list, required: true
   attr :step, :integer, default: 1
   attr :lit, :string, default: nil
+  attr :variant, :string, default: nil
 
   @doc """
   A comparison, one row at a time.
@@ -301,7 +304,7 @@ defmodule ModelNameTalkWeb.FigureComponents do
   """
   def comparison(assigns) do
     ~H"""
-    <table class="comparison">
+    <table class={["comparison", @variant && "comparison--#{@variant}"]}>
       <thead>
         <tr>
           <th :for={header <- @headers} class="comparison__head">{header}</th>

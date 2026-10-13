@@ -123,17 +123,25 @@ defmodule ModelNameTalkWeb.FigureComponentsTest do
     test "the accuracy table carries real sizes against what the formula predicts" do
       html =
         render_component(&accuracy_table/1,
-          rows: [{"Q8_0", 32.48, 32.44}, {"Q4_K_M", 18.56, 18.32}],
+          rows: [{"Q8_0", "8.5", 32.48, 32.44}, {"Q4_K_M", "about 4.8", 18.56, 18.32}],
           step: 3
         )
 
       assert html =~ "32.48"
       assert html =~ "18.32"
       assert html =~ "%"
+      assert html =~ "bits for each weight"
+      assert html =~ "about 4.8"
+      assert html =~ "formula is off by"
+      refute html =~ "out by</th>"
     end
 
     test "the accuracy table brings rows in one at a time" do
-      rows = [{"BF16", 61.10, 61.06}, {"Q8_0", 32.48, 32.44}, {"Q4_K_M", 18.56, 18.32}]
+      rows = [
+        {"BF16", "16", 61.10, 61.06},
+        {"Q8_0", "8.5", 32.48, 32.44},
+        {"Q4_K_M", "about 4.8", 18.56, 18.32}
+      ]
 
       early = render_component(&accuracy_table/1, rows: rows, step: 1)
 

@@ -184,6 +184,33 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  # The outlier example, worked rather than asserted. Four bits, a scale sized
+  # to the largest weight in the group, values checked by hand: one 12.0 in
+  # the group and every ordinary weight rounds to nothing.
+  def slide(%{slide: %Slide{id: :why_blocks}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step}
+        lit="its own block of 32"
+        variant="values"
+        headers={["the weights", "0.13", "−0.42", "0.87", "−0.05", "12.0"]}
+        rows={[
+          ["one scale for everything", "0", "0", "1.71", "0", "12.0"],
+          ["its own block of 32", "0.12", "−0.37", "0.87", "0", ""]
+        ]}
+      />
+
+      <.step n={2} step={@step}>
+        <p class="slide__caption">Small blocks keep the damage local.</p>
+      </.step>
+    </section>
+    """
+  end
+
   def slide(%{slide: %Slide{id: :the_label}} = assigns) do
     ~H"""
     <section class="slide">
@@ -230,14 +257,16 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.accuracy_table
         step={@step}
         rows={[
-          {"Qwen3-30B BF16", 61.1, 61.06},
-          {"Qwen3-30B Q8_0", 32.48, 32.44},
-          {"Qwen3-30B Q4_K_M", 18.56, 18.32}
+          {"Qwen3-30B BF16", "16", 61.1, 61.06},
+          {"Qwen3-30B Q8_0", "8.5", 32.48, 32.44},
+          {"Qwen3-30B Q4_K_M", "about 4.8", 18.56, 18.32}
         ]}
       />
 
       <.step n={3} step={@step}>
-        <p class="slide__caption">Not overhead. The wrong constant. Use 4.8, not 4.</p>
+        <p class="slide__caption">
+          Use the real bits for each weight and it lands within about 1%. For Q4_K_M that is about 4.8, not 4.
+        </p>
       </.step>
     </section>
     """
