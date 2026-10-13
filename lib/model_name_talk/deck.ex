@@ -314,18 +314,6 @@ defmodule ModelNameTalk.Deck do
             ! Ask a base model a question and it may answer with more questions
             ! It is not being unhelpful. It is doing its job exactly
             - It has seen a lot of documents that are lists of questions
-            - Next slide is the demo
-            """
-          },
-          %Slide{
-            id: :demo_base_instruct,
-            title: "DEMO",
-            chapter: 5,
-            notes: """
-            - Same prompt to Qwen3-4B-Base and Qwen3-4B-Instruct-2507
-            - Base continues, Instruct answers
-            - Keep it short. Two outputs, then move
-            - If it will not run, say what it would have shown and move on
             """
           },
           %Slide{
@@ -359,7 +347,7 @@ defmodule ModelNameTalk.Deck do
             round: :base_completion,
             steps: 2,
             notes: """
-            - They have just seen the demo, so this should land
+            - They have just heard why, so this should land
             ! The one that answers politely is the trap
             - A base model does not refuse and does not apologise. It continues
             """

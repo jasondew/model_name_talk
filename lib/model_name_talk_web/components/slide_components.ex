@@ -156,16 +156,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
-  def slide(%{slide: %Slide{id: :demo_base_instruct}} = assigns) do
-    ~H"""
-    <section class="slide slide--centred">
-      <.filename chapter={@slide.chapter} />
-      <p class="slide__demo">DEMO</p>
-      <p class="slide__caption">One prompt. Qwen3-4B-Base, then Qwen3-4B-Instruct-2507.</p>
-    </section>
-    """
-  end
-
   ## CHAPTER 7, Q4_K_M
 
   def slide(%{slide: %Slide{id: :the_formula}} = assigns) do
