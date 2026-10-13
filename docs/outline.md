@@ -362,7 +362,7 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ```
 ! This is why quantization exists. Not to be clever, to make it fit
-- Qwen3-30B at the precision Qwen released it: 61 GB
+- Qwen3-30B at the precision Qwen released it, BF16, 2 bytes each: 61 GB
 - The GPU in my machine, an RTX 3060, holds 12
 - Quantization is the whole distance between those two numbers
 - It also makes it faster, which we come back to
@@ -374,7 +374,9 @@ thing the chapter has to leave behind, and the speaker sees it all chapter.
 
 ```
 - FP32 is four bytes, BF16 two, INT8 one, four bit is half a byte
-- Vendors almost always release at 16 bits
+! Vendors release at 16 bits. That is why it is 61 GB and not 122
+- At FP32 this model would be 30.5B times 4 bytes, 122 GB. Nobody ships that
+- BF16 halves it with essentially no loss, so the release is already the first halving
 - Everything in this chapter is about spending fewer bits on each number
 ```
 
