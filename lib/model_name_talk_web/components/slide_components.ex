@@ -429,7 +429,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
         rows={[
           ["closed", "an endpoint", "no, you rent it", "Claude, GPT"],
           ["open weights", "the numbers", "yes, forever", "Qwen3, Llama"],
-          ["open source", "numbers, data, code", "yes, and rebuild it", "OLMo"]
+          ["open source", "numbers, data, code", "yes, and rebuild it", "OLMo, Nemotron"]
         ]}
       />
     </section>

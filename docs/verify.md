@@ -190,6 +190,7 @@ name. The same leading number means different things in the two families.
 | System RAM 16 GB | round 7 | Speaker's own machine. |
 | Qwen3-4B-Instruct-2507 at Q4_K_M, approximately 2.5 GB | chapter 9 | Not fetched. |
 | OLMo as the open source example | chapter 2, the three kinds table | AI2 publishes data and training code as well as weights, which is the distinction the slide draws, but the claim is not checked against their licence. |
+| Nemotron as an open source example | chapter 2, the three kinds table | NVIDIA's Hugging Face post (huggingface.co/blog/nvidia/nemotron-open-models-data) says it releases open models, data and recipes. Licences differ by release (NVIDIA Open Model License for earlier ones, reportedly OpenMDW-1.1 for Nemotron 3.5) and are not checked against OSI. |
 | Gemma-3-27B, Llama-3.3-70B as family examples | chapter 2 | Names only, no numbers attached. |
 
 A Q6_K row was cut from chapter 7's comparison because its file size was

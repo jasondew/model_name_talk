@@ -100,7 +100,7 @@ defmodule ModelNameTalk.Deck do
             ! Open weights is not open source. This is the slide people get wrong
             - Closed: you rent it. There is no file and there never will be
             - Open weights: you get the numbers. Not the data, not the training code
-            - Open source: the recipe too. Rare, and usually smaller models
+            - Open source: the recipe too. Rare. OLMo from AI2, and NVIDIA's Nemotron, which ships its training data and recipes
             - Qwen3 is open weights. You can run it forever, but you could not rebuild it
             """
           },
