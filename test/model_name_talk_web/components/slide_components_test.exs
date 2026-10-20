@@ -49,10 +49,11 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
   end
 
   # Both had fewer presses than pieces, so their last piece never appeared.
-  test "the kinds of model reach Embedding on the last press" do
+  test "the kinds of model reach Thinking on the last press" do
     slide = find(:kinds_of_model)
 
-    assert draw(slide, slide.steps) =~ "a vector, not words at all"
+    refute draw(slide, 1) =~ "reasoning first"
+    assert draw(slide, slide.steps) =~ "reasoning first, then an answer"
   end
 
   test "the label explains M on the last press" do
@@ -138,7 +139,7 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, slide.steps) =~ "Broken at 2"
   end
 
-  test "one question gets four kinds of answer, one a press" do
+  test "one question gets three kinds of answer, one a press" do
     slide = find(:base_continues)
 
     first = draw(slide, 1)
@@ -146,8 +147,9 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     refute first =~ "How do I boil an egg"
 
     assert draw(slide, 2) =~ "How do I boil an egg"
-    refute draw(slide, 2) =~ "Embedding"
-    assert draw(slide, slide.steps) =~ "Embedding"
+    refute draw(slide, 2) =~ "&lt;think&gt;"
+    assert draw(slide, slide.steps) =~ "&lt;think&gt;"
+    refute draw(slide, slide.steps) =~ "Embedding"
   end
 
   # The round after it asks what a base model does with "What is the capital

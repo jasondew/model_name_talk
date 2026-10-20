@@ -299,27 +299,25 @@ defmodule ModelNameTalk.Deck do
             id: :kinds_of_model,
             title: "What each one gives you back",
             chapter: 5,
-            steps: 3,
+            steps: 2,
             notes: """
             ! Every one of these started as the same base model
             - Base continues your text. Instruct answers you
             - Thinking writes its reasoning first, then answers. Slower, more tokens, better on hard problems
-            - Embedding is the odd one: it gives you a vector, not words
             - it is Gemma's word for instruct, and Chat is the older word
             """
           },
           %Slide{
             id: :base_continues,
-            title: "One question, four kinds of model",
+            title: "One question, three kinds of model",
             chapter: 5,
-            steps: 5,
+            steps: 4,
             notes: """
             - First press: the question. Every model on this slide started as the same base model
             ! Base: it continues the document. A page of questions is a likely document, so it writes more questions
             - It is not being unhelpful. It is doing its job exactly
             - Instruct: post-training taught it that a question wants an answer
             - Thinking: it writes its reasoning between think tags first, then answers. Slower, better on hard problems
-            - Embedding: no words at all. A list of numbers that places the question near others that mean the same thing
             - These replies are illustrative, written to show the shape of each. They are not captured output
             """
           },

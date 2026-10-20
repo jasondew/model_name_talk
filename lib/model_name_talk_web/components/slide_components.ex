@@ -200,8 +200,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
           [
             "Thinking",
             "<think>Simple steps: water, bag, time. Milk is optional.</think> Boil water, steep a tea bag for 3 to 5 minutes, add milk to taste."
-          ],
-          ["Embedding", "[0.018, -0.097, 0.231, 0.004, ...]"]
+          ]
         ]}
       />
     </section>
@@ -453,8 +452,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
         rows={[
           ["Base", "more text, continuing yours"],
           ["Instruct, it, Chat", "an answer"],
-          ["Thinking", "reasoning first, then an answer"],
-          ["Embedding", "a vector, not words at all"]
+          ["Thinking", "reasoning first, then an answer"]
         ]}
       />
     </section>
