@@ -100,7 +100,7 @@ defmodule ModelNameTalk.Deck do
             ! Open weights is not open source. This is the slide people get wrong
             - Closed: you rent it. There is no file and there never will be
             - Open weights: you get the numbers. Not the data, not the training code
-            - Open source: the recipe too. Rare, and usually smaller models
+            - Open source: the recipe too. Rare. OLMo from AI2, and NVIDIA's Nemotron, which ships its training data and recipes
             - Qwen3 is open weights. You can run it forever, but you could not rebuild it
             """
           },
@@ -111,7 +111,6 @@ defmodule ModelNameTalk.Deck do
             notes: """
             = model: a set of trained numbers, plus an architecture that says how to use them
             = weights and parameters: the numbers training adjusts. The two words mean the same thing
-            = checkpoint: a saved copy of the weights at one point in time
             = family and generation: Qwen is the family, 3 is the generation
             = open weights: the vendor publishes the file. Not the same as open source
             = token: the unit the model reads and predicts, usually a piece of a word
@@ -148,13 +147,15 @@ defmodule ModelNameTalk.Deck do
           },
           %Slide{
             id: :how_big,
-            title: "Ours, GPT-2, this one",
+            title: "TinyLLM, GPT-2, this one",
             chapter: 3,
             steps: 4,
             notes: """
             - Our toy model: 15,104 parameters. Counted, not estimated
             - GPT-2 small: 124 million
             - This one: 30,532,122,624
+            - Kimi K3, from Moonshot AI: 2.8 trillion. The largest model whose size anyone has published, about ninety times this one
+            - Closed models do not say. GPT, Claude and Gemini could be bigger and nobody outside knows
             ! Say out loud that the scale is logarithmic, or the chart lies
             ! Same kind of number as the toy model. About two million times as many
             ! It causes memory directly. It only suggests capability
@@ -298,27 +299,25 @@ defmodule ModelNameTalk.Deck do
             id: :kinds_of_model,
             title: "What each one gives you back",
             chapter: 5,
-            steps: 3,
+            steps: 2,
             notes: """
             ! Every one of these started as the same base model
             - Base continues your text. Instruct answers you
             - Thinking writes its reasoning first, then answers. Slower, more tokens, better on hard problems
-            - Embedding is the odd one: it gives you a vector, not words
             - it is Gemma's word for instruct, and Chat is the older word
             """
           },
           %Slide{
             id: :base_continues,
-            title: "One question, four kinds of model",
+            title: "One question, three kinds of model",
             chapter: 5,
-            steps: 5,
+            steps: 4,
             notes: """
             - First press: the question. Every model on this slide started as the same base model
             ! Base: it continues the document. A page of questions is a likely document, so it writes more questions
             - It is not being unhelpful. It is doing its job exactly
             - Instruct: post-training taught it that a question wants an answer
             - Thinking: it writes its reasoning between think tags first, then answers. Slower, better on hard problems
-            - Embedding: no words at all. A list of numbers that places the question near others that mean the same thing
             - These replies are illustrative, written to show the shape of each. They are not captured output
             """
           },
