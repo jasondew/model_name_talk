@@ -68,9 +68,10 @@ defmodule ModelNameTalkWeb.SlideComponents do
         step={@step}
         caption="each mark along is ten times the one before it"
         points={[
-          {"ours", 15_104},
+          {"TinyLLM", 15_104},
           {"GPT-2 small", 124_000_000},
-          {"this one", 30_532_122_624}
+          {"this one", 30_532_122_624},
+          {"Kimi K3", 2_800_000_000_000}
         ]}
       />
 
@@ -199,8 +200,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
           [
             "Thinking",
             "<think>Simple steps: water, bag, time. Milk is optional.</think> Boil water, steep a tea bag for 3 to 5 minutes, add milk to taste."
-          ],
-          ["Embedding", "[0.018, -0.097, 0.231, 0.004, ...]"]
+          ]
         ]}
       />
     </section>
@@ -429,7 +429,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
         rows={[
           ["closed", "an endpoint", "no, you rent it", "Claude, GPT"],
           ["open weights", "the numbers", "yes, forever", "Qwen3, Llama"],
-          ["open source", "numbers, data, code", "yes, and rebuild it", "OLMo"]
+          ["open source", "numbers, data, code", "yes, and rebuild it", "OLMo, Nemotron"]
         ]}
       />
     </section>
@@ -452,8 +452,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
         rows={[
           ["Base", "more text, continuing yours"],
           ["Instruct, it, Chat", "an answer"],
-          ["Thinking", "reasoning first, then an answer"],
-          ["Embedding", "a vector, not words at all"]
+          ["Thinking", "reasoning first, then an answer"]
         ]}
       />
     </section>
