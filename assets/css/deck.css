@@ -7,7 +7,8 @@
  */
 
 .deck,
-.presenter__stage {
+.presenter__stage,
+.presenter__preview {
   --deck-ink: #fafaf9;
   --deck-ground: #0c0a09;
   --deck-dim: #a8a29e;
@@ -449,6 +450,22 @@
   grid-template-columns: 3fr 2fr;
   gap: 1.5rem;
   align-items: start;
+}
+
+/* What the next press shows, small, so the speaker can lead into it. */
+.presenter__upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.presenter__preview {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--deck-ground);
+  color: var(--deck-ink);
+  zoom: 0.5;
+  pointer-events: none;
 }
 
 .presenter__game {
