@@ -70,7 +70,8 @@ defmodule ModelNameTalkWeb.SlideComponents do
         points={[
           {"TinyLLM", 15_104},
           {"GPT-2 small", 124_000_000},
-          {"this one", 30_532_122_624}
+          {"this one", 30_532_122_624},
+          {"Kimi K3", 2_800_000_000_000}
         ]}
       />
 

@@ -535,6 +535,10 @@ defmodule ModelNameTalkWeb.FigureComponents do
   defp decade_label(12), do: "trillion"
   defp decade_label(_decade), do: nil
 
+  defp humanise(count) when count >= 1_000_000_000_000 do
+    "#{Float.round(count / 1_000_000_000_000, 1)}T"
+  end
+
   defp humanise(count) when count >= 1_000_000_000 do
     "#{Float.round(count / 1_000_000_000, 1)}B"
   end

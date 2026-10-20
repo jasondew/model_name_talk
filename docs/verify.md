@@ -182,6 +182,14 @@ quantity. `Qwen3-30B-A3B` is 30B total and 3B active. `Llama-4-Scout-17B-16E`
 is 17B **active** with 16 experts, and its 109B total appears nowhere in the
 name. The same leading number means different things in the two families.
 
+## The largest published model
+
+Kimi K3 from Moonshot AI: 2.8T total parameters, 104B active, 896 experts with
+16 per token, per its model card at huggingface.co/moonshotai/Kimi-K3 (read
+2026-10-20). Wikipedia's open weights article names it the largest open weight
+model. Closed vendors do not publish sizes, so "largest known" means largest
+published, and the notes say so.
+
 ## Still unchecked
 
 | Fact | Used by | Why it is still open |

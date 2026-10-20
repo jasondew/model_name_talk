@@ -255,6 +255,18 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert html =~ "magnitude__dot"
   end
 
+  test "the magnitude figure writes a trillion as T, not thousands of B" do
+    html =
+      render_component(&FigureComponents.orders_of_magnitude/1,
+        points: [{"this one", 30_532_122_624}, {"Kimi K3", 2_800_000_000_000}],
+        step: 2
+      )
+
+    assert html =~ "2.8T"
+    assert html =~ "trillion"
+    refute html =~ "2800.0B"
+  end
+
   test "the magnitude figure brings its marks in one step at a time" do
     points = [{"ours", 15_104}, {"GPT-2 small", 124_000_000}, {"this one", 30_532_122_624}]
 

@@ -154,6 +154,8 @@ defmodule ModelNameTalk.Deck do
             - Our toy model: 15,104 parameters. Counted, not estimated
             - GPT-2 small: 124 million
             - This one: 30,532,122,624
+            - Kimi K3, from Moonshot AI: 2.8 trillion. The largest model whose size anyone has published, about ninety times this one
+            - Closed models do not say. GPT, Claude and Gemini could be bigger and nobody outside knows
             ! Say out loud that the scale is logarithmic, or the chart lies
             ! Same kind of number as the toy model. About two million times as many
             ! It causes memory directly. It only suggests capability
