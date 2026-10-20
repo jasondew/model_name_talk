@@ -33,11 +33,20 @@ defmodule ModelNameTalkWeb.Position do
 
   @doc "Where the next press lands, and the game moved to match."
   @spec forward(t()) :: t()
-  def forward({slide, step}) do
+  def forward(position), do: position |> upcoming() |> settle()
+
+  @doc """
+  Where the next press would land, without moving anything.
+
+  The presenter view shows it, so the speaker can lead into a slide rather
+  than react to it.
+  """
+  @spec upcoming(t()) :: t()
+  def upcoming({slide, step}) do
     if step < Deck.at(slide).steps do
-      settle({slide, step + 1})
+      {slide, step + 1}
     else
-      settle(enter(slide + 1, :forward))
+      enter(slide + 1, :forward)
     end
   end
 

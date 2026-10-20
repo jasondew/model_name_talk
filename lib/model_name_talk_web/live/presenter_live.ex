@@ -82,6 +82,7 @@ defmodule ModelNameTalkWeb.PresenterLive do
     assigns =
       assigns
       |> assign(slide: slide, step: step, section: section)
+      |> assign(upcoming: Position.upcoming(assigns.position))
       |> assign(expected: Deck.minutes_before(section) + section.minutes)
 
     ~H"""
@@ -101,8 +102,23 @@ defmodule ModelNameTalkWeb.PresenterLive do
 
       <section class="presenter__desk">
         <.notes slide={@slide} />
+
+        <aside class="presenter__upcoming">
+          <p class="presenter__here">{upcoming_label(@position, @upcoming)}</p>
+          <div :if={@upcoming != @position} class="presenter__preview">
+            <.slide slide={Deck.at(elem(@upcoming, 0))} step={elem(@upcoming, 1)} room={@room} />
+          </div>
+        </aside>
       </section>
     </main>
     """
   end
+
+  ## PRIVATE FUNCTIONS
+
+  defp upcoming_label(position, position), do: "End of the deck"
+  defp upcoming_label({index, _step}, {index, step}), do: "Next press: step #{step} of this slide"
+
+  defp upcoming_label(_position, {index, _step}),
+    do: "Next slide: #{index + 1}. #{Deck.at(index).title}"
 end

@@ -81,6 +81,83 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
     assert draw(slide, 3) =~ "raw__special"
   end
 
+  test "the blocks slide shows the outlier wiping out a shared scale, then a block saving it" do
+    slide = find(:why_blocks)
+
+    first = draw(slide, 1)
+    assert first =~ "one scale for everything"
+    refute first =~ "its own block of 32"
+
+    assert draw(slide, slide.steps) =~ "its own block of 32"
+  end
+
+  test "the memory and speed slide adds up to 30.5B stored and 3.3B used" do
+    slide = find(:memory_and_speed)
+
+    refute draw(slide, 1) =~ "128 of them"
+    assert draw(slide, 3) =~ "30.5B"
+    assert draw(slide, 3) =~ "3.3B"
+    refute draw(slide, 3) =~ "slide__equation"
+    assert draw(slide, slide.steps) =~ "slide__equation"
+  end
+
+  test "the model only fits the GPU on the last press" do
+    slide = find(:why_quantize)
+
+    refute draw(slide, 1) =~ "fits</span>"
+    refute draw(slide, 3) =~ "fits</span>"
+    assert draw(slide, slide.steps) =~ "fits</span>"
+  end
+
+  test "the formula is worked through to 18.3 GB" do
+    slide = find(:the_formula)
+
+    refute draw(slide, 1) =~ "18.3 GB"
+    assert draw(slide, 2) =~ "4.8 bits"
+    assert draw(slide, 3) =~ "18.3 GB"
+  end
+
+  test "the precision slide draws each format's bits, one a press" do
+    slide = find(:precision)
+
+    first = draw(slide, 1)
+    assert first =~ "FP32"
+    assert first =~ "bits__field--exponent"
+    refute first =~ "BF16"
+
+    last = draw(slide, slide.steps)
+    assert last =~ "INT4"
+    assert last =~ "0.1001"
+  end
+
+  test "the quantized toy model holds to 4 bits and breaks at 2" do
+    slide = find(:quality_and_speed)
+
+    refute draw(slide, 1) =~ "who who"
+    assert draw(slide, slide.steps) =~ "who who"
+    assert draw(slide, slide.steps) =~ "Broken at 2"
+  end
+
+  test "one question gets four kinds of answer, one a press" do
+    slide = find(:base_continues)
+
+    first = draw(slide, 1)
+    assert first =~ "How do I make a cup of tea?"
+    refute first =~ "How do I boil an egg"
+
+    assert draw(slide, 2) =~ "How do I boil an egg"
+    refute draw(slide, 2) =~ "Embedding"
+    assert draw(slide, slide.steps) =~ "Embedding"
+  end
+
+  # The round after it asks what a base model does with "What is the capital
+  # of France?". Showing that exact exchange first would give the answer away.
+  test "the examples do not give away the round that follows" do
+    slide = find(:base_continues)
+
+    refute draw(slide, slide.steps) =~ "capital of France"
+  end
+
   test "draws every slide in the deck, at every step, without raising" do
     for slide <- Deck.slides(), step <- 1..slide.steps do
       assert draw(slide, step), "#{slide.id} would not draw at step #{step}"

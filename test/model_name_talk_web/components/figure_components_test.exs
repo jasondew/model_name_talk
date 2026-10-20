@@ -11,30 +11,45 @@ defmodule ModelNameTalkWeb.FigureComponentsTest do
   end
 
   describe "the expert grid" do
+    @tokens [[3, 9, 20], [4, 9, 30], [5, 6, 7]]
+
     test "draws every expert" do
-      html = render_component(&expert_grid/1, experts: 128, active: [3, 9, 20], step: 3)
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 3)
 
       assert count(html, "figure__expert") == 128
     end
 
-    test "lights only the experts the router picked" do
-      html = render_component(&expert_grid/1, experts: 128, active: [3, 9, 20], step: 3)
+    test "lights the first token's experts on the third press" do
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 3)
 
       assert count(html, "figure__expert figure__expert--active") == 3
+      refute html =~ "figure__expert--used"
     end
 
     test "lights nothing before the router has run" do
-      html = render_component(&expert_grid/1, experts: 128, active: [3, 9, 20], step: 1)
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 1)
 
       refute html =~ "figure__expert--active"
     end
 
     test "draws the router once the layer is on screen" do
-      early = render_component(&expert_grid/1, experts: 16, active: [1], step: 1)
-      later = render_component(&expert_grid/1, experts: 16, active: [1], step: 2)
+      early = render_component(&expert_grid/1, experts: 16, tokens: [[1]], step: 1)
+      later = render_component(&expert_grid/1, experts: 16, tokens: [[1]], step: 2)
 
       refute early =~ "figure__router"
       assert later =~ "figure__router"
+    end
+
+    # The point of the later presses: a different eight each token, while
+    # what earlier tokens used stays in memory.
+    test "lights the next token's experts and keeps the earlier ones faintly lit" do
+      html = render_component(&expert_grid/1, experts: 128, tokens: @tokens, step: 4)
+
+      assert count(html, "figure__expert figure__expert--active") == 3
+      # 3 and 20 belong to the first token only; 9 is shared and so is lit
+      assert count(html, "figure__expert figure__expert--used") == 2
+      assert html =~ "token 2"
+      assert html =~ "5 of 128 touched so far"
     end
   end
 
@@ -123,17 +138,25 @@ defmodule ModelNameTalkWeb.FigureComponentsTest do
     test "the accuracy table carries real sizes against what the formula predicts" do
       html =
         render_component(&accuracy_table/1,
-          rows: [{"Q8_0", 32.48, 32.44}, {"Q4_K_M", 18.56, 18.32}],
+          rows: [{"Q8_0", "8.5", 32.48, 32.44}, {"Q4_K_M", "about 4.8", 18.56, 18.32}],
           step: 3
         )
 
       assert html =~ "32.48"
       assert html =~ "18.32"
       assert html =~ "%"
+      assert html =~ "bits for each weight"
+      assert html =~ "about 4.8"
+      assert html =~ "formula is off by"
+      refute html =~ "out by</th>"
     end
 
     test "the accuracy table brings rows in one at a time" do
-      rows = [{"BF16", 61.10, 61.06}, {"Q8_0", 32.48, 32.44}, {"Q4_K_M", 18.56, 18.32}]
+      rows = [
+        {"BF16", "16", 61.10, 61.06},
+        {"Q8_0", "8.5", 32.48, 32.44},
+        {"Q4_K_M", "about 4.8", 18.56, 18.32}
+      ]
 
       early = render_component(&accuracy_table/1, rows: rows, step: 1)
 

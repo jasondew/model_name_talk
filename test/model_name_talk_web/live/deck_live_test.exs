@@ -191,6 +191,36 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
   end
 
   describe "what the speaker sees" do
+    test "the next slide, before the room sees it", %{conn: conn} do
+      {:ok, presenter, _html} = live(conn, ~p"/presenter")
+      [first, second | _rest] = Deck.slides()
+
+      forward(presenter, first.steps - 1)
+
+      html = render(presenter)
+      assert html =~ "Next slide: 2. #{second.title}"
+      assert html =~ "presenter__preview"
+    end
+
+    test "the next press within a slide, when the slide builds", %{conn: conn} do
+      {:ok, presenter, _html} = live(conn, ~p"/presenter")
+      building = Enum.find(Deck.slides(), &(&1.steps > 1 and is_nil(&1.round)))
+
+      press_to(presenter, building.id)
+
+      assert render(presenter) =~ "Next press: step 2 of this slide"
+    end
+
+    test "looking ahead does not move the room", %{conn: conn} do
+      {:ok, presenter, _html} = live(conn, ~p"/presenter")
+      press_to(presenter, :round_open_weights)
+      before = Room.state()
+
+      render(presenter)
+
+      assert Room.state() == before
+    end
+
     test "the notes, with what must be said out loud marked", %{conn: conn} do
       {:ok, presenter, html} = live(conn, ~p"/presenter")
 

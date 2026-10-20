@@ -91,7 +91,15 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
       <div class="slide__pair">
         <.dense_layer />
-        <.expert_grid experts={128} active={[6, 19, 31, 44, 68, 83, 101, 119]} step={@step} />
+        <.expert_grid
+          experts={128}
+          step={@step}
+          tokens={[
+            [6, 19, 31, 44, 68, 83, 101, 119],
+            [3, 27, 40, 57, 72, 90, 108, 125],
+            [11, 19, 35, 61, 77, 94, 113, 122]
+          ]}
+        />
       </div>
     </section>
     """
@@ -99,20 +107,34 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   # Two lines, and the largest type in the deck. This is the chapter, and
   # everything before it exists to make these two lines mean something.
+  # The accounting, a row a press, then the two lines it adds up to. Numbers
+  # are computed from the model's config.json and land on the published
+  # 30.5B and 3.3B; the working is in docs/verify.md.
   def slide(%{slide: %Slide{id: :memory_and_speed}} = assigns) do
     ~H"""
-    <section class="slide slide--centred">
+    <section class="slide">
       <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <p class="slide__equation">
-        <span class="slide__equation-from">Total parameters</span>
-        <span class="slide__equation-arrow">&rarr;</span>
-        <span class="slide__equation-to">memory</span>
-      </p>
+      <.comparison
+        step={@step}
+        lit="total"
+        headers={["", "stored", "used for each token"]}
+        rows={[
+          ["shared: attention, embeddings, router", "1.5B", "1.5B"],
+          ["experts, about 0.23B each", "128 of them: 29.0B", "8 of them: 1.8B"],
+          ["total", "30.5B", "3.3B"]
+        ]}
+      />
 
-      <.step n={2} step={@step}>
+      <.step n={4} step={@step}>
         <p class="slide__equation">
-          <span class="slide__equation-from">Active parameters</span>
+          <span class="slide__equation-from">30.5B stored</span>
+          <span class="slide__equation-arrow">&rarr;</span>
+          <span class="slide__equation-to">memory</span>
+        </p>
+        <p class="slide__equation">
+          <span class="slide__equation-from">3.3B used</span>
           <span class="slide__equation-arrow">&rarr;</span>
           <span class="slide__equation-to">speed</span>
         </p>
@@ -155,14 +177,55 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
+  # One question and what each kind of model sends back. The replies are
+  # illustrative and the notes say so; the question differs from the round
+  # that follows so that slide does not give the round away.
+  def slide(%{slide: %Slide{id: :base_continues}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <p class="slide__prompt">How do I make a cup of tea?</p>
+
+      <.comparison
+        step={@step - 1}
+        variant="sentences"
+        lit="Instruct"
+        headers={["", "what comes back"]}
+        rows={[
+          ["Base", "How do I make a cup of coffee? How do I boil an egg? How do I"],
+          ["Instruct", "Boil water, steep a tea bag for 3 to 5 minutes, add milk if you like."],
+          [
+            "Thinking",
+            "<think>Simple steps: water, bag, time. Milk is optional.</think> Boil water, steep a tea bag for 3 to 5 minutes, add milk to taste."
+          ],
+          ["Embedding", "[0.018, -0.097, 0.231, 0.004, ...]"]
+        ]}
+      />
+    </section>
+    """
+  end
+
   ## CHAPTER 7, Q4_K_M
 
+  # The formula, then the formula used: Q4_K_M, the file in the title.
   def slide(%{slide: %Slide{id: :the_formula}} = assigns) do
     ~H"""
     <section class="slide slide--centred">
       <.filename chapter={@slide.chapter} />
       <p class="slide__formula">parameters &times; bits to store each parameter</p>
-      <p class="slide__caption">That is bits. Divide by 8 for bytes.</p>
+      <p :if={@step == 1} class="slide__caption">That is bits. Divide by 8 for bytes.</p>
+
+      <.step n={2} step={@step}>
+        <p class="slide__working">30.5 billion &times; 4.8 bits</p>
+      </.step>
+
+      <.step n={3} step={@step}>
+        <p class="slide__working">
+          = 146.6 billion bits &divide; 8 = <span class="slide__working-answer">18.3 GB</span>
+        </p>
+      </.step>
     </section>
     """
   end
@@ -179,6 +242,33 @@ defmodule ModelNameTalkWeb.SlideComponents do
         <p class="slide__caption">
           One scale for the block. One small integer for each weight.
         </p>
+      </.step>
+    </section>
+    """
+  end
+
+  # The outlier example, worked rather than asserted. Four bits, a scale sized
+  # to the largest weight in the group, values checked by hand: one 12.0 in
+  # the group and every ordinary weight rounds to nothing.
+  def slide(%{slide: %Slide{id: :why_blocks}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.comparison
+        step={@step}
+        lit="its own block of 32"
+        variant="values"
+        headers={["the weights", "0.13", "−0.42", "0.87", "−0.05", "12.0"]}
+        rows={[
+          ["one scale for everything", "0", "0", "1.71", "0", "12.0"],
+          ["its own block of 32", "0.12", "−0.37", "0.87", "0", ""]
+        ]}
+      />
+
+      <.step n={2} step={@step}>
+        <p class="slide__caption">Small blocks keep the damage local.</p>
       </.step>
     </section>
     """
@@ -230,14 +320,16 @@ defmodule ModelNameTalkWeb.SlideComponents do
       <.accuracy_table
         step={@step}
         rows={[
-          {"Qwen3-30B BF16", 61.1, 61.06},
-          {"Qwen3-30B Q8_0", 32.48, 32.44},
-          {"Qwen3-30B Q4_K_M", 18.56, 18.32}
+          {"Qwen3-30B BF16", "16", 61.1, 61.06},
+          {"Qwen3-30B Q8_0", "8.5", 32.48, 32.44},
+          {"Qwen3-30B Q4_K_M", "about 4.8", 18.56, 18.32}
         ]}
       />
 
       <.step n={3} step={@step}>
-        <p class="slide__caption">Not overhead. The wrong constant. Use 4.8, not 4.</p>
+        <p class="slide__caption">
+          Use the real bits for each weight and it lands within about 1%. For Q4_K_M that is about 4.8, not 4.
+        </p>
       </.step>
     </section>
     """
@@ -370,24 +462,22 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   ## CHAPTER 7, what the labels cost
 
+  # The same model saved smaller and smaller against a GPU that does not
+  # move. Every size is a real file from docs/verify.md.
   def slide(%{slide: %Slide{id: :why_quantize}} = assigns) do
     ~H"""
-    <section class="slide slide--centred">
+    <section class="slide">
       <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
-      <p class="slide__equation">
-        <span class="slide__equation-to">61 GB</span>
-        <span class="slide__equation-from">of model</span>
-      </p>
+      <.fit_chart
+        step={@step}
+        limit={12.0}
+        limit_label="the GPU: 12 GB"
+        rows={[{"BF16", 61.1}, {"Q8_0", 32.48}, {"Q4_K_M", 18.56}, {"Q2_K", 11.26}]}
+      />
 
-      <.step n={2} step={@step}>
-        <p class="slide__equation">
-          <span class="slide__equation-to">12 GB</span>
-          <span class="slide__equation-from">of GPU memory</span>
-        </p>
-      </.step>
-
-      <.step n={3} step={@step}>
+      <.step n={4} step={@step}>
         <p class="slide__caption">Quantization is that gap, and nothing else.</p>
       </.step>
     </section>
@@ -417,23 +507,55 @@ defmodule ModelNameTalkWeb.SlideComponents do
     """
   end
 
-  ## TABLES THE ROOM SHOULD SEE
+  ## QUANTIZATION, MEASURED
 
-  def slide(%{slide: %Slide{id: :precision}} = assigns) do
+  # Real output from the toy model, quantized and generated from a fixed seed.
+  # docs/experiments/quantise_toy.exs reproduces every number here.
+  def slide(%{slide: %Slide{id: :quality_and_speed}} = assigns) do
     ~H"""
     <section class="slide">
       <.filename chapter={@slide.chapter} />
       <h2 class="slide__title slide__title--small">{@slide.title}</h2>
 
       <.comparison
-        step={@step * 2}
-        lit="BF16"
-        headers={["format", "bits", "bytes for each weight"]}
+        step={@step}
+        variant="sentences"
+        headers={["", "grammatical", "one sentence it wrote, same seed"]}
         rows={[
-          ["FP32", "32", "4"],
-          ["BF16", "16", "2"],
-          ["INT8", "8", "1"],
-          ["4-bit", "4", "0.5"]
+          ["full precision", "91%", "the small grumpy llamas are hungry ."],
+          ["8 bits", "92%", "the small grumpy llamas are hungry ."],
+          ["4 bits", "91%", "the small grumpy llamas are hungry ."],
+          ["3 bits", "88%", "the hungry grumpy llamas are hungry ."],
+          ["2 bits", "75%", "a goose who who is small ignores the hungry ."]
+        ]}
+      />
+
+      <.step n={5} step={@step}>
+        <p class="slide__caption">Fine to 4 bits. Drifting at 3. Broken at 2.</p>
+      </.step>
+    </section>
+    """
+  end
+
+  ## TABLES THE ROOM SHOULD SEE
+
+  # What each number format is, bit by bit. The ranges and the values 0.1
+  # turns into were computed, not looked up; see docs/verify.md.
+  def slide(%{slide: %Slide{id: :precision}} = assigns) do
+    ~H"""
+    <section class="slide">
+      <.filename chapter={@slide.chapter} />
+      <h2 class="slide__title slide__title--small">{@slide.title}</h2>
+
+      <.bit_layout
+        step={@step}
+        lit="BF16"
+        rows={[
+          {"FP32", [sign: 1, exponent: 8, mantissa: 23], "±3.4 × 10³⁸", "0.10000000149"},
+          {"FP16", [sign: 1, exponent: 5, mantissa: 10], "±65,504", "0.09998"},
+          {"BF16", [sign: 1, exponent: 8, mantissa: 7], "±3.4 × 10³⁸", "0.1001"},
+          {"INT8", [integer: 8], "−128 to 127", "a whole number, and a scale"},
+          {"INT4", [integer: 4], "−8 to 7", "a whole number, and a scale"}
         ]}
       />
     </section>

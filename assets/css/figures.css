@@ -636,3 +636,220 @@
   font-size: clamp(1rem, 1.7vw, 1.375rem);
   line-height: 1.35;
 }
+
+/* A table whose header row is the data itself, as with the outlier example:
+   the inputs should read as numbers, not as column labels. */
+
+.comparison--values .comparison__head {
+  color: var(--deck-ink);
+  font-size: clamp(0.875rem, 1.9vw, 1.625rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Experts an earlier token used: still in memory, not working right now. */
+.figure__expert--used {
+  background: color-mix(in srgb, var(--deck-lit) 35%, var(--deck-line));
+}
+
+/*
+ * Sizes against a fixed limit. The GPU line never moves and the model is
+ * saved smaller each press. Past the line is dim, inside it is lit and says
+ * "fits" in words, so the verdict never rests on colour alone.
+ */
+
+.fit {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75vh;
+}
+
+.fit__limit {
+  position: absolute;
+  top: -0.875vh;
+  bottom: -0.875vh;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--deck-ink);
+}
+
+.fit__limit-label {
+  position: absolute;
+  bottom: 0.25rem;
+  transform: translateX(-50%);
+  color: var(--deck-ink);
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.fit__row--header .fit__track {
+  height: 1.75rem;
+}
+
+.fit__row {
+  display: grid;
+  grid-template-columns: 9ch 1fr 13ch;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fit__label {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(0.9375rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+}
+
+.fit__track {
+  position: relative;
+  height: clamp(1.75rem, 4vh, 3rem);
+}
+
+.fit__bar {
+  height: 100%;
+  border-radius: 0.25rem;
+  background: var(--deck-line);
+}
+
+.fit__bar--fits {
+  background: var(--deck-lit);
+}
+
+.fit__size {
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(0.9375rem, 1.7vw, 1.4375rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.fit__verdict {
+  color: var(--deck-lit);
+}
+
+/* The formula worked through, a line a press. */
+
+.slide__working {
+  margin: 0;
+  color: var(--deck-dim);
+  font-size: clamp(1.25rem, 3.4vw, 3rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.slide__working-answer {
+  color: var(--deck-lit);
+}
+
+/*
+ * Number formats, drawn as their bits. A row is as wide as the format has
+ * bits, out of 32, so the cost is visible before anybody reads a number.
+ * Field colour carries meaning only alongside the legend and the bit counts
+ * printed in each field.
+ */
+
+.bits {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25vh;
+}
+
+.bits__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 0.5vh;
+  font-size: clamp(0.8125rem, 1.4vw, 1.125rem);
+  font-weight: 700;
+}
+
+.bits__key::before {
+  content: "";
+  display: inline-block;
+  width: 0.875em;
+  height: 0.875em;
+  margin-right: 0.4em;
+  border-radius: 2px;
+  vertical-align: -0.1em;
+}
+
+.bits__key--sign::before { background: var(--deck-dim); }
+.bits__key--exponent::before { background: var(--deck-lit); }
+.bits__key--mantissa::before { background: #60a5fa; }
+
+.bits__head,
+.bits__row {
+  display: grid;
+  grid-template-columns: 6ch 3fr 1.3fr 1.6fr;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.bits__head {
+  color: var(--deck-dim);
+  font-size: clamp(0.6875rem, 1.2vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bits__name,
+.bits__range,
+.bits__example {
+  margin: 0;
+  font-size: clamp(0.875rem, 1.7vw, 1.4375rem);
+  font-weight: 700;
+}
+
+.bits__name {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 800;
+}
+
+.bits__example {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.bits__row--lit .bits__name {
+  color: var(--deck-lit);
+}
+
+.bits__word {
+  display: flex;
+  gap: 2px;
+  height: clamp(1.5rem, 3.6vh, 2.5rem);
+}
+
+.bits__field {
+  display: grid;
+  place-items: center;
+  border-radius: 2px;
+  color: #0c0a09;
+  font-size: clamp(0.6875rem, 1.2vw, 1rem);
+  font-weight: 800;
+}
+
+.bits__field--sign { background: var(--deck-dim); }
+.bits__field--exponent { background: var(--deck-lit); }
+.bits__field--mantissa { background: #60a5fa; }
+.bits__field--integer { background: #60a5fa; }
+
+/* Sentences a model wrote: set as text it produced, not as prose. */
+.comparison--sentences .comparison__cell:last-child {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* The question every row of the table is answering. */
+.slide__prompt {
+  margin: 0;
+  padding: 0.75rem 1.125rem;
+  border-left: 0.3rem solid var(--deck-lit);
+  background: #000000;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: clamp(1rem, 2.2vw, 1.875rem);
+  font-weight: 800;
+}

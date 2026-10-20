@@ -77,18 +77,43 @@ defmodule ModelNameTalkWeb.FigureComponents do
   end
 
   attr :experts, :integer, required: true
-  attr :active, :list, required: true
+  attr :tokens, :list, required: true
   attr :step, :integer, default: 1
 
   @doc """
   One Mixture of Experts layer: a router, and a grid of small feed forward
-  blocks with the ones this token uses lit.
+  blocks with the ones the current token uses lit.
 
-  The grid is the argument. A hundred and twenty eight squares with eight of
-  them lit says "most of this model sits still for any given token" faster
-  than a sentence can, and it is the one picture the chapter needs.
+  The router appears on the second press and the first token's experts on
+  the third. Each press after that is the next token, lighting a different
+  eight, while the experts earlier tokens used stay faintly lit. That is the
+  answer to "why must all of it be in memory if only a little is used": a
+  few tokens in, the touched experts are already spread across the grid.
   """
   def expert_grid(assigns) do
+    shown = assigns.step - 2
+
+    current =
+      if shown >= 1,
+        do: Enum.at(assigns.tokens, min(shown, length(assigns.tokens)) - 1, []),
+        else: []
+
+    earlier =
+      assigns.tokens
+      |> Enum.take(max(min(shown, length(assigns.tokens)) - 1, 0))
+      |> List.flatten()
+      |> MapSet.new()
+
+    touched = earlier |> MapSet.union(MapSet.new(current)) |> MapSet.size()
+
+    assigns =
+      assign(assigns,
+        current: current,
+        earlier: earlier,
+        touched: touched,
+        token: min(max(shown, 0), length(assigns.tokens))
+      )
+
     ~H"""
     <div class="figure__moe">
       <p :if={@step >= 2} class="figure__router">router</p>
@@ -98,12 +123,16 @@ defmodule ModelNameTalkWeb.FigureComponents do
           :for={expert <- 1..@experts}
           class={[
             "figure__expert",
-            @step >= 3 and expert in @active and "figure__expert--active"
+            expert in @current && "figure__expert--active",
+            (expert not in @current and MapSet.member?(@earlier, expert)) && "figure__expert--used"
           ]}
         ></span>
       </div>
 
-      <p class="figure__moe-caption">{@experts} experts, {length(@active)} used</p>
+      <p :if={@token == 0} class="figure__moe-caption">{@experts} experts</p>
+      <p :if={@token >= 1} class="figure__moe-caption">
+        token {@token}: {length(@current)} experts &middot; {@touched} of {@experts} touched so far
+      </p>
     </div>
     """
   end
@@ -222,14 +251,14 @@ defmodule ModelNameTalkWeb.FigureComponents do
   attr :step, :integer, default: 1
 
   @doc """
-  Real file sizes against what the formula predicts.
+  Real file sizes against what the formula predicts, with the bits that went
+  into it.
 
-  This is the chapter's argument. The brief framed the distance between a
-  predicted fifteen gigabytes and a real eighteen and a half as overhead to
-  explain away. It is not overhead: it is the wrong constant. Put the right
-  bits for each weight in and the formula lands within about one percent,
-  every time, which is a better thing to remember than a rule with an excuse
-  attached.
+  The bits column is the point: without it the room cannot see where the
+  predicted size came from. BF16's 16 and Q8_0's 8.5 are known in advance,
+  from the format and from the llama.cpp struct, so those rows are genuine
+  predictions. Q4_K_M mixes formats, so its 4.8 is measured from real files
+  rather than derived, and the slide says "about".
   """
   def accuracy_table(assigns) do
     ~H"""
@@ -237,20 +266,22 @@ defmodule ModelNameTalkWeb.FigureComponents do
       <thead>
         <tr>
           <th class="accuracy__head"></th>
-          <th class="accuracy__head">real file</th>
+          <th class="accuracy__head">bits for each weight</th>
           <th class="accuracy__head">the formula</th>
-          <th class="accuracy__head">out by</th>
+          <th class="accuracy__head">real file</th>
+          <th class="accuracy__head">formula is off by</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          :for={{{label, real, predicted}, order} <- Enum.with_index(@rows, 1)}
+          :for={{{label, bits, real, predicted}, order} <- Enum.with_index(@rows, 1)}
           :if={order <= @step}
           class="accuracy__row"
         >
           <td class="accuracy__label">{label}</td>
-          <td class="accuracy__real">{real} GB</td>
+          <td class="accuracy__bits">{bits}</td>
           <td class="accuracy__predicted">{predicted} GB</td>
+          <td class="accuracy__real">{real} GB</td>
           <td class="accuracy__error">{error(real, predicted)}</td>
         </tr>
       </tbody>
@@ -287,6 +318,7 @@ defmodule ModelNameTalkWeb.FigureComponents do
   attr :rows, :list, required: true
   attr :step, :integer, default: 1
   attr :lit, :string, default: nil
+  attr :variant, :string, default: nil
 
   @doc """
   A comparison, one row at a time.
@@ -301,7 +333,7 @@ defmodule ModelNameTalkWeb.FigureComponents do
   """
   def comparison(assigns) do
     ~H"""
-    <table class="comparison">
+    <table class={["comparison", @variant && "comparison--#{@variant}"]}>
       <thead>
         <tr>
           <th :for={header <- @headers} class="comparison__head">{header}</th>
@@ -352,7 +384,109 @@ defmodule ModelNameTalkWeb.FigureComponents do
     """
   end
 
+  attr :rows, :list, required: true
+  attr :limit, :float, required: true
+  attr :limit_label, :string, required: true
+  attr :step, :integer, default: 1
+
+  @doc """
+  File sizes against a fixed memory limit, one row a press.
+
+  The line is the GPU and it never moves; the bars are the same model saved
+  smaller and smaller. A bar past the line is drawn dim, a bar inside it is
+  lit and says so in words, so whether it fits never depends on colour alone.
+  """
+  def fit_chart(assigns) do
+    largest = assigns.rows |> Enum.map(&elem(&1, 1)) |> Enum.max()
+    assigns = assign(assigns, largest: largest)
+
+    ~H"""
+    <figure class="figure fit">
+      <div class="fit__row fit__row--header">
+        <span></span>
+        <div class="fit__track">
+          <span class="fit__limit-label" style={"left: #{@limit / @largest * 100}%"}>
+            {@limit_label}
+          </span>
+        </div>
+        <span></span>
+      </div>
+
+      <div
+        :for={{{label, gigabytes}, order} <- Enum.with_index(@rows, 1)}
+        :if={order <= @step}
+        class="fit__row"
+      >
+        <p class="fit__label">{label}</p>
+        <div class="fit__track">
+          <div
+            class={["fit__bar", gigabytes <= @limit && "fit__bar--fits"]}
+            style={"width: #{gigabytes / @largest * 100}%"}
+          >
+          </div>
+          <span class="fit__limit" style={"left: #{@limit / @largest * 100}%"}></span>
+        </div>
+        <p class="fit__size">
+          {gigabytes} GB<span :if={gigabytes <= @limit} class="fit__verdict"> fits</span>
+        </p>
+      </div>
+    </figure>
+    """
+  end
+
+  attr :rows, :list, required: true
+  attr :step, :integer, default: 1
+  attr :lit, :string, default: nil
+
+  @doc """
+  How each number format spends its bits, one format a press.
+
+  Each row draws the bits themselves, as wide as there are bits, split into
+  the fields that matter: the sign, the exponent that sets how big a number
+  can be, and the mantissa that sets how many digits it keeps. An integer
+  format spends every bit on the value and needs a scale from outside to mean
+  anything. Beside each, the range it can reach and what 0.1 actually turns
+  into, which is the clearest way to see what precision costs.
+  """
+  def bit_layout(assigns) do
+    ~H"""
+    <div class="bits">
+      <p class="bits__legend">
+        <span class="bits__key bits__key--sign">sign</span>
+        <span class="bits__key bits__key--exponent">exponent: how big</span>
+        <span class="bits__key bits__key--mantissa">mantissa: how many digits</span>
+      </p>
+
+      <div class="bits__head">
+        <span></span><span>the bits</span><span>range</span><span>0.1 becomes</span>
+      </div>
+
+      <div
+        :for={{{name, fields, range, example}, order} <- Enum.with_index(@rows, 1)}
+        :if={order <= @step}
+        class={["bits__row", name == @lit && "bits__row--lit"]}
+      >
+        <p class="bits__name">{name}</p>
+        <div class="bits__word">
+          <span
+            :for={{kind, count} <- fields}
+            class={"bits__field bits__field--#{kind}"}
+            style={"width: #{count / 32 * 100}%"}
+          >{field_label(kind, count)}</span>
+        </div>
+        <p class="bits__range">{range}</p>
+        <p class="bits__example">{example}</p>
+      </div>
+    </div>
+    """
+  end
+
   ## PRIVATE FUNCTIONS
+
+  # The sign is one bit and too narrow to label; the other fields carry their
+  # bit count so the room can add them up.
+  defp field_label(:sign, _count), do: ""
+  defp field_label(_kind, count), do: "#{count}"
 
   # Weights run from minus one to one; the line runs from zero to a hundred.
   defp on_line(value), do: (value + 1) / 2 * 100
