@@ -111,7 +111,6 @@ defmodule ModelNameTalk.Deck do
             notes: """
             = model: a set of trained numbers, plus an architecture that says how to use them
             = weights and parameters: the numbers training adjusts. The two words mean the same thing
-            = checkpoint: a saved copy of the weights at one point in time
             = family and generation: Qwen is the family, 3 is the generation
             = open weights: the vendor publishes the file. Not the same as open source
             = token: the unit the model reads and predicts, usually a piece of a word
