@@ -147,7 +147,7 @@ defmodule ModelNameTalk.Deck do
           },
           %Slide{
             id: :how_big,
-            title: "Ours, GPT-2, this one",
+            title: "TinyLLM, GPT-2, this one",
             chapter: 3,
             steps: 4,
             notes: """

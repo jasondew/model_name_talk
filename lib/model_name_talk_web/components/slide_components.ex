@@ -68,7 +68,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
         step={@step}
         caption="each mark along is ten times the one before it"
         points={[
-          {"ours", 15_104},
+          {"TinyLLM", 15_104},
           {"GPT-2 small", 124_000_000},
           {"this one", 30_532_122_624}
         ]}
