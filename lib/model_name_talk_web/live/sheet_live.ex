@@ -24,14 +24,14 @@ defmodule ModelNameTalkWeb.SheetLive do
     {:ok,
      socket
      |> assign(definitions: definitions())
-     |> assign(page_title: "How to Read a Model Name"), layout: false}
+     |> assign(page_title: "What's in a name?"), layout: false}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
     <main class="sheet">
-      <h1 class="sheet__title">How to Read a Model Name</h1>
+      <h1 class="sheet__title">What's in a name?</h1>
 
       <section class="sheet__block">
         <.annotated />

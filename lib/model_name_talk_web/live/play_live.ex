@@ -30,7 +30,7 @@ defmodule ModelNameTalkWeb.PlayLive do
     {:ok,
      socket
      |> assign(room: Room.state(), token: nil, handle: nil)
-     |> assign(page_title: "How to Read a Model Name"), layout: false}
+     |> assign(page_title: "What's in a name?"), layout: false}
   end
 
   @impl true
@@ -84,7 +84,7 @@ defmodule ModelNameTalkWeb.PlayLive do
 
     ~H"""
     <main class="play" id="play" phx-hook="TokenKeeper">
-      <p class="play__brand">How to Read a Model Name</p>
+      <p class="play__brand">What's in a name?</p>
 
       <form :if={is_nil(@handle)} class="play__handle" phx-submit="handle">
         <label class="play__handle-label" for="handle">What should we call you?</label>

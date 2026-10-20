@@ -32,7 +32,7 @@ defmodule ModelNameTalk.Deck do
         slides: [
           %Slide{
             id: :title,
-            title: "How to Read a Model Name",
+            title: "What's in a name?",
             notes: """
             - Say the title once, then stop
             ! By the end you can read any of these and say whether it fits on your machine
@@ -203,11 +203,14 @@ defmodule ModelNameTalk.Deck do
             id: :dense_or_sparse,
             title: "One big block, or many small ones",
             chapter: 4,
-            steps: 3,
+            steps: 5,
             notes: """
             - Left: a dense layer. One feed forward block, the MLP from last time
             - Right: the same layer as a Mixture of Experts. 128 small blocks and a router
             - For each token, in each layer, the router picks 8
+            - Next press: the second token picks a different 8. Then a third
+            ! This is why all 30B have to be in memory: you cannot know in advance which experts the next token needs
+            - Faint ones were used by earlier tokens. Expert 19 got picked twice, which happens
             - In this model all 48 layers are like this. No dense layers mixed in
             """
           },
@@ -226,15 +229,14 @@ defmodule ModelNameTalk.Deck do
             id: :memory_and_speed,
             title: "Total sets memory. Active sets speed.",
             chapter: 4,
-            steps: 2,
+            steps: 4,
             notes: """
+            - First press: the shared part. Attention, embeddings, the router. Every token uses all of it
+            - Second press: the experts. 128 of them stored, only 8 used for any one token
+            - Third press: add it up. 30.5B stored, 3.3B used. That 3.3B is the A3B in the name
+            ! 3B is not one expert. It is 8 small experts plus the shared part every token uses
             ! Every expert has to be in memory, because the next token may want a different one
-            ! But each token only uses about 3B of those 30B parameters
-            ! 3B is not one expert. It is 8 small experts plus the attention and embeddings every token uses
-            - Each expert is about 226M across all 48 layers. All 128 of them are 29B, 95% of the model
-            - Total is 1.5B shared plus 128 experts. Active is the same 1.5B plus 8
-            - So it costs a 30B model to hold and runs near the speed of a 3B one
-            - Attention is not split. Every token uses all of it
+            - Fourth press: total sets memory, active sets speed. That is the whole chapter
             - If a name has no A segment, assume dense
             """
           },
@@ -307,13 +309,17 @@ defmodule ModelNameTalk.Deck do
           },
           %Slide{
             id: :base_continues,
-            title: "A base model continues the document",
+            title: "One question, four kinds of model",
             chapter: 5,
-            steps: 2,
+            steps: 5,
             notes: """
-            ! Ask a base model a question and it may answer with more questions
-            ! It is not being unhelpful. It is doing its job exactly
-            - It has seen a lot of documents that are lists of questions
+            - First press: the question. Every model on this slide started as the same base model
+            ! Base: it continues the document. A page of questions is a likely document, so it writes more questions
+            - It is not being unhelpful. It is doing its job exactly
+            - Instruct: post-training taught it that a question wants an answer
+            - Thinking: it writes its reasoning between think tags first, then answers. Slower, better on hard problems
+            - Embedding: no words at all. A list of numbers that places the question near others that mean the same thing
+            - These replies are illustrative, written to show the shape of each. They are not captured output
             """
           },
           %Slide{
@@ -405,37 +411,44 @@ defmodule ModelNameTalk.Deck do
             id: :why_quantize,
             title: "61 GB, and a 12 GB GPU",
             chapter: 7,
-            steps: 3,
+            steps: 4,
             notes: """
             ! This is why quantization exists. Not to be clever, to make it fit
-            - Qwen3-30B at the precision Qwen released it, BF16, 2 bytes each: 61 GB
-            - The GPU in my machine, an RTX 3060, holds 12
-            - Quantization is the whole distance between those two numbers
-            - It also makes it faster, which we come back to
+            - First press: the model as Qwen released it, BF16, 2 bytes each: 61 GB. The line is my GPU, an RTX 3060, 12 GB
+            - Then the same model saved smaller: Q8_0, then Q4_K_M, the usual choice
+            - Last press: Q2_K, 11.3 GB, finally inside the line
+            - It fits only just. The context needs memory too, and 2 bits is a big quality hit. More on both shortly
+            - Every bar is a real file on Hugging Face
             """
           },
           %Slide{
             id: :precision,
             title: "Bits for each weight",
             chapter: 7,
-            steps: 2,
+            steps: 5,
             notes: """
-            - FP32 is four bytes, BF16 two, INT8 one, four bit is half a byte
+            - Each bar is the bits themselves, as wide as the format has bits
+            - A float spends its bits three ways: a sign, an exponent for how big, a mantissa for how many digits
+            - FP32: 8 bits of exponent, 23 of mantissa. Huge range, about 7 digits. 0.1 comes back as 0.10000000149
+            - FP16: half the bits, but it takes them out of both. Only reaches 65,504, about 3 digits
+            ! BF16 keeps FP32's exponent and throws away mantissa. Same range, only 2 or 3 digits
+            - That is the right trade for weights: range matters, the third digit barely does. It is what Qwen ships
             ! Vendors release at 16 bits. That is why it is 61 GB and not 122
-            - At FP32 this model would be 30.5B times 4 bytes, 122 GB. Nobody ships that
-            - BF16 halves it with essentially no loss, so the release is already the first halving
-            - Everything in this chapter is about spending fewer bits on each number
+            - INT8 and INT4 are not floats at all: just a whole number. On their own they cannot say 0.1
+            - They need a scale from outside to mean anything, and that is the next few slides
             """
           },
           %Slide{
             id: :the_formula,
             title: "parameters x bits",
             chapter: 7,
+            steps: 3,
             notes: """
             ! If they remember one thing from this talk, this is it
-            - Parameters in billions times bits for each, divided by 8, gives gigabytes
-            - 30.5B at 16 bits is 488 billion bits, over 8 is 61 GB. That is the release
             - Say it once, slowly, and let it sit
+            - Second press: use it on the file in the title. 30.5 billion parameters, Q4_K_M is about 4.8 bits each
+            - Third press: 146.6 billion bits, divide by 8 for bytes, 18.3 GB
+            - The real file is 18.56 GB. We come back to how close that is
             """
           },
           %Slide{
@@ -454,10 +467,14 @@ defmodule ModelNameTalk.Deck do
             id: :why_blocks,
             title: "One huge weight would ruin a whole tensor",
             chapter: 7,
+            steps: 2,
             notes: """
-            ! Small blocks keep the damage local
-            - One outlier in a block of 32 spoils 32 numbers, not 30 billion
-            - This is the entire reason blocks exist
+            ! The scale has to fit the biggest weight in its group
+            - Four bits is 16 levels. The scale stretches them from the most negative weight to the most positive
+            - First press: one scale for everything. One 12.0 stretches the levels so wide that every ordinary weight rounds to 0
+            - Second press: give them their own block and they keep their values
+            ! An outlier in a block of 32 spoils 32 numbers, not 30 billion. That is the whole reason blocks exist
+            - The numbers are illustrative: symmetric 4 bit, scale is the largest value over 7
             """
           },
           %Slide{
@@ -504,22 +521,28 @@ defmodule ModelNameTalk.Deck do
             chapter: 7,
             steps: 3,
             notes: """
-            ! Within about one percent, every time
-            - These are real file sizes from Hugging Face, checked this week
-            ! The gap is not overhead to apologise for. It is the wrong constant
-            - Put 4.8 in for Q4_K_M rather than 4, and the formula is right
-            - That is a better thing to remember than a rule with an excuse attached
+            ! Run the formula, check it against the real file on Hugging Face. Within about 1% every time
+            - Read the bits column first, then the formula, then the real file
+            - 16 and 8.5 are known in advance: one is the format, the other is the llama.cpp struct
+            ! For Q4_K_M, assume about 4.8 bits, not 4. It mixes formats, so that number comes from measuring real files
+            - The file is always a little bigger: it also holds metadata, the tokenizer and the chat template
             """
           },
           %Slide{
             id: :quality_and_speed,
-            title: "Rules of thumb, and they are rules of thumb",
+            title: "Our model, quantized",
             chapter: 7,
+            steps: 5,
             notes: """
-            ! Say out loud that these are rules of thumb, not measurements
-            - 8 bits is nearly lossless. 4 bits is the usual deal
-            - Below about 3 bits quality falls off a cliff
-            - Quantising also makes it faster. Generation is memory bandwidth bound, fewer bytes to move
+            - This is the toy model from last time, really quantized and really measured. Not a mock up
+            - Blocks of 32, a scale and a minimum each, the same idea llama.cpp uses
+            - Same seed every row, so the only thing that changes is the bits
+            ! Down to 4 bits it writes the exact same sentence
+            - At 3 it starts to drift: hungry where it said small
+            ! At 2 it falls apart: "a goose who who is small ignores the hungry"
+            - The percentage is how many of 500 sentences were grammatical. 8 bits beating full precision is noise
+            - Caveat: 15 thousand parameters. Big models degrade differently, but the rule of thumb has the same shape
+            - Smaller is also faster. Generating is limited by moving weights from memory, and there are fewer bytes to move
             """
           },
           %Slide{
