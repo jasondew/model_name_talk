@@ -59,7 +59,3 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
-
-# What the QR code on every slide points a phone at. In production this is the
-# tunnel host, because the audience is remote and nobody is on this network.
-config :model_name_talk, join_url: "http://localhost:4000/play"

@@ -14,9 +14,8 @@ defmodule Mix.Tasks.Talk.Outline do
       mix talk.outline 7           one chapter
       mix talk.outline --markdown  write docs/outline.md, to edit and hand back
 
-  A slide marked `[stub]` has no drawing of its own yet and renders hatched,
-  showing its title and notes. That is deliberate while the deck is written:
-  an unwritten slide announces itself rather than looking finished.
+  A slide marked `[stub]` has no drawing of its own yet and renders as its
+  title alone under the file name, with its notes on the presenter view only.
   """
 
   use Mix.Task
@@ -145,10 +144,9 @@ defmodule Mix.Tasks.Talk.Outline do
   defp stub?(slide) do
     render_component(&ModelNameTalkWeb.SlideComponents.slide/1,
       slide: slide,
-      step: 1,
-      room: %ModelNameTalk.Room{}
+      step: 1
     )
-    |> String.contains?("slide--stub")
+    |> String.contains?("slide--undrawn")
   rescue
     _error -> false
   end

@@ -4,15 +4,11 @@ defmodule ModelNameTalkWeb.PresenterLive do
 
   Top to bottom: where the talk is and the clock, the line this section has
   to land, the slide the room is looking at, and under it the notes beside
-  the game's controls.
+  what the next press will show.
 
   That order is deliberate. The only two questions a speaker asks in the
   middle of a talk are where am I and am I behind, so the laptop answers both
   before it shows anything else.
-
-  The end-round-early button matters more than it looks. Twenty seconds of
-  silence on a video call is a long time, and once twenty-eight of thirty-one
-  people have answered there is no reason to spend the last eight waiting.
   """
 
   use ModelNameTalkWeb, :live_view
@@ -20,7 +16,7 @@ defmodule ModelNameTalkWeb.PresenterLive do
   import ModelNameTalkWeb.NotesComponents
   import ModelNameTalkWeb.SlideComponents
 
-  alias ModelNameTalk.{Deck, Room}
+  alias ModelNameTalk.Deck
   alias ModelNameTalkWeb.{DeckLive, Position}
 
   @tick 1000
@@ -29,13 +25,12 @@ defmodule ModelNameTalkWeb.PresenterLive do
   def mount(_params, _session, socket) do
     if connected?(socket) do
       Position.subscribe()
-      Room.subscribe()
       :timer.send_interval(@tick, :tick)
     end
 
     {:ok,
      socket
-     |> assign(position: Position.current(), room: Room.state())
+     |> assign(position: Position.current())
      |> assign(elapsed: 0, running: true)
      |> assign(page_title: "Presenter"), layout: false}
   end
@@ -51,27 +46,13 @@ defmodule ModelNameTalkWeb.PresenterLive do
 
   def handle_event("key", %{"key" => key}, socket), do: {:noreply, DeckLive.move(socket, key)}
 
-  def handle_event("lock", _params, socket) do
-    Room.lock()
-
-    {:noreply, assign(socket, room: Room.state())}
-  end
-
-  def handle_event("reveal", _params, socket) do
-    Room.reveal()
-
-    {:noreply, assign(socket, room: Room.state())}
-  end
-
   @impl true
   def handle_info(:tick, %{assigns: %{running: false}} = socket), do: {:noreply, socket}
 
   def handle_info(:tick, socket), do: {:noreply, update(socket, :elapsed, &(&1 + 1))}
 
   def handle_info({:position, position}, socket),
-    do: {:noreply, assign(socket, position: position, room: Room.state())}
-
-  def handle_info({:room, room}, socket), do: {:noreply, assign(socket, room: room)}
+    do: {:noreply, assign(socket, position: position)}
 
   @impl true
   def render(assigns) do
@@ -97,7 +78,7 @@ defmodule ModelNameTalkWeb.PresenterLive do
       <p class="presenter__lands">{@section.lands}</p>
 
       <section class="presenter__stage">
-        <.slide slide={@slide} step={@step} room={@room} />
+        <.slide slide={@slide} step={@step} />
       </section>
 
       <section class="presenter__desk">
@@ -106,7 +87,7 @@ defmodule ModelNameTalkWeb.PresenterLive do
         <aside class="presenter__upcoming">
           <p class="presenter__here">{upcoming_label(@position, @upcoming)}</p>
           <div :if={@upcoming != @position} class="presenter__preview">
-            <.slide slide={Deck.at(elem(@upcoming, 0))} step={elem(@upcoming, 1)} room={@room} />
+            <.slide slide={Deck.at(elem(@upcoming, 0))} step={elem(@upcoming, 1)} />
           </div>
         </aside>
       </section>
