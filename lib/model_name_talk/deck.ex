@@ -36,7 +36,6 @@ defmodule ModelNameTalk.Deck do
             notes: """
             - Say the title once, then stop
             ! By the end you can read any of these and say whether it fits on your machine
-            - Point at the QR. It is on every slide, join whenever
             """
           },
           %Slide{
@@ -573,7 +572,7 @@ defmodule ModelNameTalk.Deck do
             round: :how_many_gigabytes,
             steps: 2,
             notes: """
-            ! Say out loud that this is the no rush round. No speed bonus on this one
+            ! Say out loud that this is the no rush round
             - Forty five seconds. Let them actually do the arithmetic
             - 70 times 8.5 bits is 595 billion bits, over 8 is about 75 GB. The real file is 74.98
             - Anything from 68 to 80 counts, including 70 if they used 8 bits flat
@@ -660,7 +659,7 @@ defmodule ModelNameTalk.Deck do
         number: 9,
         title: "Close",
         minutes: 2,
-        lands: "they can read the name, and the board says who read it best",
+        lands: "they can read the name, and say whether it fits",
         slides: [
           %Slide{
             id: :annotated_name,

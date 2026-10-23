@@ -33,7 +33,6 @@ defmodule ModelNameTalkWeb.SlideComponents do
 
   attr :slide, :map, required: true
   attr :step, :integer, required: true
-  attr :room, :map, required: true
 
   @doc "One slide, drawn by its id."
 
@@ -663,7 +662,7 @@ defmodule ModelNameTalkWeb.SlideComponents do
   # front of a room.
   def slide(assigns) do
     ~H"""
-    <section class="slide slide--centred">
+    <section class="slide slide--centred slide--undrawn">
       <.filename :if={@slide.chapter} chapter={@slide.chapter} />
       <h2 class="slide__title">{@slide.title}</h2>
     </section>

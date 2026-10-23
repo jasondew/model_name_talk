@@ -3,11 +3,11 @@ defmodule ModelNameTalkWeb.SlideComponentsTest do
 
   import Phoenix.LiveViewTest
 
-  alias ModelNameTalk.{Deck, Room, Slide}
+  alias ModelNameTalk.{Deck, Slide}
   alias ModelNameTalkWeb.{FigureComponents, SlideComponents}
 
   defp draw(slide, step \\ 1) do
-    render_component(&SlideComponents.slide/1, slide: slide, step: step, room: %Room{})
+    render_component(&SlideComponents.slide/1, slide: slide, step: step)
   end
 
   defp find(id), do: Enum.find(Deck.slides(), &(&1.id == id))

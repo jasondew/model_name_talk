@@ -23,14 +23,6 @@ end
 config :model_name_talk, ModelNameTalkWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
-# The link the audience follows, on the QR code on every slide. It has to be
-# the tunnel host rather than this machine, because over a screen share nobody
-# is on the same network as the laptop the deck is running on. Set in every
-# environment, because the tunnel is used in development too.
-if join_url = System.get_env("JOIN_URL") do
-  config :model_name_talk, join_url: join_url
-end
-
 if config_env() == :dev do
   # Reload browser tabs when matching files change.
   config :model_name_talk, ModelNameTalkWeb.Endpoint,

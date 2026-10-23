@@ -3,11 +3,11 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
 
   import Phoenix.LiveViewTest
 
-  alias ModelNameTalk.{Deck, Ledger, Room}
+  alias ModelNameTalk.Deck
+  alias ModelNameTalkWeb.Position
 
   setup do
-    Room.reset()
-    Ledger.forget()
+    Position.reset()
     :ok
   end
 
@@ -37,59 +37,38 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
 
   defp press_to(view, slide_id), do: forward(view, presses_to(slide_id))
 
-  describe "driving a round from the slide on screen" do
-    test "opens the first round's question when it reaches that slide", %{conn: conn} do
+  describe "asking a question out loud" do
+    test "arrives at the question with its answer hidden", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/")
 
       press_to(view, :round_open_weights)
 
-      assert Room.state().round == :open_weights
+      assert {_index, 1} = Position.current()
       assert render(view) =~ "download the weights"
     end
 
-    test "reveals on the next press rather than moving on", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/")
-      press_to(view, :round_open_weights)
-
-      forward(view)
-
-      assert Room.state().phase == :revealed
-      assert Room.state().round == :open_weights
-    end
-
-    test "closes the round when it moves to the next chapter", %{conn: conn} do
+    # Walking back to a question means wanting to ask it again, so it is
+    # entered at the question rather than at its answer.
+    test "walking back to a question asks it again", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/")
       press_to(view, :round_open_weights)
       forward(view, 2)
 
-      assert is_nil(Room.state().round)
-    end
-
-    test "re-opens and re-asks a round when the speaker walks backwards", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/")
-      press_to(view, :round_open_weights)
-      forward(view)
-
-      assert Room.state().phase == :revealed
-
-      forward(view)
       back(view)
 
-      assert Room.state().round == :open_weights
-      assert Room.state().phase == :open
+      assert {_index, 1} = Position.current()
+      refute render(view) =~ "The answer:"
     end
 
-    # The room remembers the position, so a fresh window opens where the talk
-    # already is. Each round therefore gets its own reset rather than its own
-    # window starting from the title.
-    test "asks every round in the deck, each in its own chapter", %{conn: conn} do
+    test "every question slide opens at its question", %{conn: conn} do
       for slide <- Deck.slides(), slide.round do
-        Room.reset()
+        Position.reset()
         {:ok, view, _html} = live(conn, ~p"/")
         press_to(view, slide.id)
 
-        assert Room.state().round == slide.round, "#{slide.id} did not open its round"
-        assert Room.state().phase == :open
+        # Slides are numbered from 1 for people; positions count from 0.
+        assert Position.current() == {slide.index - 1, 1},
+               "#{slide.id} did not open at its question"
       end
     end
   end
@@ -125,7 +104,7 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
     end
   end
 
-  test "renders every slide, forwards and back, with an empty room", %{conn: conn} do
+  test "renders every slide, forwards and back, ", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/")
     every_press = Deck.slides() |> Enum.map(& &1.steps) |> Enum.sum()
 
@@ -143,23 +122,12 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
       assert render(presenter) =~ "download the weights"
     end
 
-    test "the presenter can end a round early", %{conn: conn} do
-      {:ok, deck, _html} = live(conn, ~p"/")
-      {:ok, presenter, _html} = live(conn, ~p"/presenter")
-      press_to(deck, :round_open_weights)
-
-      render_click(presenter, "lock", %{})
-
-      assert Room.state().phase == :locked
-    end
-
     test "the presenter can drive the deck too", %{conn: conn} do
       {:ok, deck, _html} = live(conn, ~p"/")
       {:ok, presenter, _html} = live(conn, ~p"/presenter")
 
       press_to(presenter, :round_open_weights)
 
-      assert Room.state().round == :open_weights
       assert render(deck) =~ "download the weights"
     end
   end
@@ -167,8 +135,7 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
   describe "a window that arrives late" do
     # Reloading a window mid-talk is a plausible thing to do when something
     # looks stuck. Until the position was kept somewhere, a reloaded window
-    # came back at the title while the room was on slide four, and the next
-    # arrow press drove the game from the beginning.
+    # came back at the title while the room was on slide four.
     test "opens where the talk actually is", %{conn: conn} do
       {:ok, deck, _html} = live(conn, ~p"/")
       press_to(deck, :round_open_weights)
@@ -178,15 +145,14 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
       assert render(late) =~ "download the weights"
     end
 
-    test "a reloaded deck carries on rather than rewinding the game", %{conn: conn} do
+    test "a reloaded deck carries on rather than rewinding", %{conn: conn} do
       {:ok, deck, _html} = live(conn, ~p"/")
       press_to(deck, :round_open_weights)
 
       {:ok, reloaded, _html} = live(conn, ~p"/")
       forward(reloaded)
 
-      assert Room.state().round == :open_weights
-      assert Room.state().phase == :revealed
+      assert render(reloaded) =~ "The answer: Qwen3"
     end
   end
 
@@ -211,14 +177,14 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
       assert render(presenter) =~ "Next press: step 2 of this slide"
     end
 
-    test "looking ahead does not move the room", %{conn: conn} do
+    test "looking ahead does not move the deck", %{conn: conn} do
       {:ok, presenter, _html} = live(conn, ~p"/presenter")
       press_to(presenter, :round_open_weights)
-      before = Room.state()
+      before = Position.current()
 
       render(presenter)
 
-      assert Room.state() == before
+      assert Position.current() == before
     end
 
     test "the notes, with what must be said out loud marked", %{conn: conn} do
@@ -253,11 +219,11 @@ defmodule ModelNameTalkWeb.DeckLiveTest do
     test "the clock resets on r without moving the deck", %{conn: conn} do
       {:ok, presenter, _html} = live(conn, ~p"/presenter")
       press_to(presenter, :qwen3_terms)
-      where = Room.position()
+      where = Position.current()
 
       render_keydown(presenter, "key", %{"key" => "r"})
 
-      assert Room.position() == where
+      assert Position.current() == where
       assert render(presenter) =~ "00:00"
     end
   end

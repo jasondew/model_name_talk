@@ -5,7 +5,6 @@
 @import "phoenix-colocated/model_name_talk/colocated.css";
 @import "./deck.css";
 @import "./figures.css";
-@import "./play.css";
 @source "../css";
 @source "../js";
 @source "../../lib/model_name_talk_web";
