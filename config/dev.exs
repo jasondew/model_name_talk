@@ -10,7 +10,6 @@ config :model_name_talk, ModelNameTalkWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}],
-  check_origin: false,
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "LuNpdaNgaXwDOXHAHu28u7ePzGrQ3vi9H146+dTZcGs6go7QkmMQz4xdjC2ZPZmR",

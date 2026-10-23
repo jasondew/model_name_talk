@@ -19,8 +19,6 @@ defmodule ModelNameTalkWeb.Router do
 
     live "/", DeckLive
     live "/presenter", PresenterLive
-    live "/play", PlayLive
-    live "/sheet", SheetLive
   end
 
   # Other scopes may use custom stacks.

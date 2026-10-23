@@ -1,39 +1,47 @@
 defmodule ModelNameTalkWeb.Position do
   @moduledoc """
-  Where the talk is, shared between the window on the projector and the window
-  on the speaker's laptop.
+  Where the talk is, shared between the window being screen shared and the
+  window on the speaker's laptop.
 
   Either window can hold the clicker. A move made in one is broadcast to the
   other, so the deck and the presenter view cannot disagree about which slide
   is up.
 
-  Moving is also what drives the game. Arriving at a slide that asks a round
-  opens it, the second press on that slide reveals the answer, and leaving
-  closes it. There is no separate control, because the one thing a speaker
-  cannot do while talking is remember a second thing.
+  The position is also kept here, not only broadcast. A window that arrives
+  in the middle of a talk, or one the speaker reloads because something looks
+  stuck, has to come back where the talk already is, and nobody is listening
+  to a broadcast until they have mounted.
 
-  A round slide is always entered at its first step, from either direction.
-  Walking back to a question means wanting to ask it again; a speaker who only
-  wanted to see the answer again can press forward once more.
+  A question slide is always entered at its first step, from either
+  direction. Walking back to a question means wanting to ask it again; a
+  speaker who only wanted to see the answer again can press forward once more.
   """
 
-  alias ModelNameTalk.{Deck, Room}
+  use Agent
+
+  alias ModelNameTalk.Deck
   alias Phoenix.PubSub
 
   @topic "position"
 
   @type t :: {non_neg_integer(), pos_integer()}
 
+  def start_link(_options), do: Agent.start_link(fn -> {0, 1} end, name: __MODULE__)
+
   @spec subscribe() :: :ok
   def subscribe, do: PubSub.subscribe(ModelNameTalk.PubSub, @topic)
 
   @doc "Where the talk is, for a window that has just opened."
   @spec current() :: t()
-  def current, do: Room.position()
+  def current, do: Agent.get(__MODULE__, & &1)
 
-  @doc "Where the next press lands, and the game moved to match."
+  @doc "Back to the title. For rehearsals and tests."
+  @spec reset() :: :ok
+  def reset, do: Agent.update(__MODULE__, fn _position -> {0, 1} end)
+
+  @doc "Where the next press lands, remembered."
   @spec forward(t()) :: t()
-  def forward(position), do: position |> upcoming() |> settle()
+  def forward(position), do: position |> upcoming() |> remember()
 
   @doc """
   Where the next press would land, without moving anything.
@@ -50,13 +58,13 @@ defmodule ModelNameTalkWeb.Position do
     end
   end
 
-  @doc "Where a press of the left arrow lands, and the game moved to match."
+  @doc "Where a press of the left arrow lands, remembered."
   @spec back(t()) :: t()
   def back({slide, step}) do
     if step > 1 do
-      settle({slide, step - 1})
+      remember({slide, step - 1})
     else
-      settle(enter(slide - 1, :back))
+      remember(enter(slide - 1, :back))
     end
   end
 
@@ -82,23 +90,9 @@ defmodule ModelNameTalkWeb.Position do
     end
   end
 
-  # Whatever the room is doing is a function of where the deck is, so it is
-  # recomputed from the position rather than nudged by each key press.
-  defp settle({index, step} = position) do
-    slide = Deck.at(index)
-    Room.move(position)
-
-    case {slide.round, step} do
-      {nil, _step} -> Room.open(nil)
-      {round, 1} -> Room.ask(round)
-      {round, _later} -> reveal(round)
-    end
+  defp remember(position) do
+    Agent.update(__MODULE__, fn _previous -> position end)
 
     position
-  end
-
-  defp reveal(round) do
-    Room.open(round)
-    Room.reveal()
   end
 end
