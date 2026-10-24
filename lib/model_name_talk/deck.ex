@@ -670,15 +670,6 @@ defmodule ModelNameTalk.Deck do
             - Leave it up while you talk. Do not move on quickly
             - Every segment with its label underneath
             - Read it left to right once, out loud, at normal speed
-            """
-          },
-          %Slide{
-            id: :whats_next,
-            title: "Next: from the file to the agent",
-            chapter: 9,
-            notes: """
-            - One line. Do not start the next talk here
-            - Cut this slide entirely if you are over time
             - Then take questions
             """
           }
